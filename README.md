@@ -1,3 +1,3 @@
 # Stand Up
 
-A simple that reminds you to stand up!
+A simple app that reminds you to stand up!
