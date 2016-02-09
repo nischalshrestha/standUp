@@ -12,13 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private RelativeLayout bgView;
     private TextView timerView;
     private TextView statusTextView;
     private ImageView statusView;
@@ -67,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         };
 
+
         int colorFrom = getResources().getColor(R.color.startColor);
         int colorTo = getResources().getColor(R.color.endColor);
         final ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
@@ -90,9 +89,12 @@ public class MainActivity extends AppCompatActivity {
                     timer.start();
                     colorAnimation.start();
                 } else if(startBtn.getText().equals(getString(R.string.stop_button))){
+                    statusTextView.setText("");
                     statusView.setImageResource(R.drawable.sit);
                     timerView.setText(R.string.reset_timer);
+                    timerView.setTextColor(getResources().getColor(R.color.startColor));
                     startBtn.setText(R.string.start_button);
+                    colorAnimation.cancel();
                     timer.cancel();
                 }
             }
