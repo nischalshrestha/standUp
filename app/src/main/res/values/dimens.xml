@@ -2,4 +2,22 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <!-- Status Text-->
+    <dimen name="status_text">30sp</dimen>
+    <!-- Status View -->
+    <dimen name="status_view_text">30sp</dimen>
+    <!-- Status Image-->
+    <dimen name="status_width">100dp</dimen>
+    <dimen name="status_height">100dp</dimen>
+    <dimen name="status_marginTop">50dp</dimen>
+    <dimen name="status_marginBottom">50dp</dimen>
+
+    <!-- Button -->
+    <dimen name="start_width">200dp</dimen>
+    <dimen name="start_marginTop">20dp</dimen>
+    <dimen name="start_text">20sp</dimen>
+
+    <!-- Timer-->
+    <dimen name="timer_text">50sp</dimen>
+
 </resources>

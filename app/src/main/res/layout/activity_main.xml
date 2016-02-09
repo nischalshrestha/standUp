@@ -16,29 +16,29 @@
         android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sitting"
-        android:textSize="30sp"
+        android:text=""
+        android:textSize="@dimen/status_text"
         android:textColor="@color/startColor"
         android:layout_centerHorizontal="true"
         />
 
     <ImageView
         android:id="@+id/status"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/status_width"
+        android:layout_height="@dimen/status_height"
         android:src="@drawable/sit"
         android:layout_below="@+id/statusText"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp"/>
+        android:layout_marginTop="@dimen/status_marginTop"
+        android:layout_marginBottom="@dimen/status_marginBottom"/>
 
     <TextView
         android:id="@+id/timer"
         android:layout_below="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="20:00 min"
-        android:textSize="50sp"
+        android:text="@string/default_timer"
+        android:textSize="@dimen/timer_text"
         android:textColor="@color/startColor"
         android:layout_centerInParent="true"
         />
@@ -46,10 +46,11 @@
     <Button
         android:id="@+id/start"
         android:layout_below="@+id/timer"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/start_width"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="START SESSION"
+        android:layout_marginTop="@dimen/start_marginTop"
+        android:text="@string/start_button"
+        android:textSize="@dimen/start_text"
         android:layout_centerHorizontal="true"/>
 
 

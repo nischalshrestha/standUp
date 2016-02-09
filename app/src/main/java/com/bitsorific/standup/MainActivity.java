@@ -2,16 +2,19 @@ package com.bitsorific.standup;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView statusTextView;
     private ImageView statusView;
     private Button startBtn;
-    private Handler handler;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +48,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
-                statusTextView.setText("Stand Up!");
+                statusTextView.setText(R.string.time_to_stand);
                 statusView.setImageResource(R.drawable.stand);
-                timerView.setText("00:00 min");
+                timerView.setText(R.string.reset_timer);
+                handler.post(new Runnable() {
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        if(++count <= 3) {
+                            final Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                            // Vibrate for 500 milliseconds
+                            v.vibrate(100);
+                            handler.postDelayed(this, 500);
+                        }
+                    }
+                });
             }
 
         };
@@ -69,16 +84,16 @@ public class MainActivity extends AppCompatActivity {
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(startBtn.getText().equals("START SESSION")){
+                if(startBtn.getText().equals(getString(R.string.start_button))){
                     statusView.setImageResource(R.drawable.sit);
+                    startBtn.setText(R.string.stop_button);
                     timer.start();
                     colorAnimation.start();
-                    startBtn.setText("STOP SESSION");
-                } else{
+                } else if(startBtn.getText().equals(getString(R.string.stop_button))){
                     statusView.setImageResource(R.drawable.sit);
-                    timerView.setText("00:00 min");
+                    timerView.setText(R.string.reset_timer);
+                    startBtn.setText(R.string.start_button);
                     timer.cancel();
-                    startBtn.setText("START SESSION");
                 }
             }
         });
