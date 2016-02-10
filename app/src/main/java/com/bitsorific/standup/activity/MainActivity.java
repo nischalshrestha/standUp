@@ -1,4 +1,4 @@
-package com.bitsorific.standup;
+package com.bitsorific.standup.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bitsorific.standup.R;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView statusTextView;
     private ImageView statusView;
     private Button startBtn;
-    private Handler handler = new Handler();
 
+    private Handler handler = new Handler();
     private CountDownTimer sitTimer;
     private CountDownTimer standTimer;
 
@@ -104,6 +106,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
     }
 
     /**
@@ -187,7 +194,10 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.about) {
+        if(id == R.id.settings){
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
         }

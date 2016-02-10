@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Stand Up</string>
     <string name="about_label">About Stand Up</string>
+    <string name="settings_label">Settings</string>
     <string name="time_to_stand">Time to stand up!</string>
     <string name="time_to_sit">You can sit down now!</string>
     <string name="reset_timer">00:00</string>
@@ -21,4 +22,23 @@
         app is done at your own risk, and in no event shall the developer be liable for personal injury or any
         incidental, special, indirect, or consequential damages whatsoever.
     </string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_sound_title">Sound</string>
+    <string name="pref_summary_sound">Turn sound on/off</string>
+    <string name="pref_title_sound">Alarm sound</string>
+    <string name="pref_summary_alarm_tone">Pick an alarm sound</string>
+    <string name="pref_title_alarm_tone">Alarm tone</string>
+    <string name="pref_summary_vibrate_style">Pick style of vibrate</string>
+    <string name="pref_title_vibrate_style">Vibrate style</string>
+    <string name="pref_timer_title">Timer</string>
+    <string name="pref_title_sitting_period">Sitting period</string>
+    <string name="pref_summary_sitting_period">Period of time before standing up (Max: 60 min)</string>
+    <string name="dialog_title_sitting_time_preference">Enter sitting period in min</string>
+    <string name="pref_title_standing_period">Standing period</string>
+    <string name="pref_summary_standing_period">Period of time standing up</string>
+    <string name="dialog_title_standing_time_preference">Enter standing period in min</string>
+
 </resources>

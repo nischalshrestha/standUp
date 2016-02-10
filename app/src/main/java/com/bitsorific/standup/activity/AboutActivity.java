@@ -1,7 +1,9 @@
-package com.bitsorific.standup;
+package com.bitsorific.standup.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.bitsorific.standup.R;
 
 /**
  * Created by nischal on 2/9/16.
