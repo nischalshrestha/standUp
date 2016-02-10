@@ -2,10 +2,10 @@
 <resources>
     <color name="colorPrimary">#4688f1</color>
     <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimaryLight">#81a3d0</color>
     <color name="colorAccent">#FF4081</color>
 
     <!-- Background View-->
-
 
     <color name="cyan">#1fbcd2</color>
     <color name="orange">#fd6942</color>
