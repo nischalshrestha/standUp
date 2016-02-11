@@ -31,13 +31,13 @@
         android:title="@string/pref_timer_title"
         android:key="pref_timer_settings">
 
-        <Preference
+        <com.bitsorific.standup.preference.NumberPickerPreference
             android:key="sitting_period_preference"
             android:title="@string/pref_title_sitting_period"
             android:summary="@string/pref_summary_sitting_period"
             />
 
-        <Preference
+        <com.bitsorific.standup.preference.NumberPickerPreference
             android:key="standing_period_preference"
             android:title="@string/pref_title_standing_period"
             android:summary="@string/pref_summary_standing_period"

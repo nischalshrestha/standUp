@@ -2,11 +2,7 @@ package com.bitsorific.standup.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
-import android.text.TextUtils;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.bitsorific.standup.R;
 import com.bitsorific.standup.activity.SettingsActivity;
@@ -20,7 +16,6 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
     }
@@ -41,20 +36,11 @@ public class SettingsFragment extends PreferenceFragment
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // Handle input
         if (key.equals(SettingsActivity.KEY_PREF_SITTING_PERIOD)) {
-//             = sharedPreferences.getString(key, "");
-            EditTextPreference editTextPref = (EditTextPreference) findPreference(key);
-            String sittingPref = editTextPref.getText();
-            Log.d("Pref", "Sitting period is: " + TextUtils.isDigitsOnly(sittingPref)+" : "+getActivity().getApplicationContext());
-            // Set summary to be the user-description for the selected value
-            if(sittingPref.equals("")) {
-                Toast.makeText(getActivity().getApplicationContext(), "Please enter an integer!", Toast.LENGTH_LONG);
-            }
-            try{
-                Integer.parseInt(sittingPref);
-            } catch (NumberFormatException e){
-                Toast.makeText(getActivity(), "Please enter an integer!", Toast.LENGTH_LONG);
-            }
+//            Log.d("Pref", "val: "+sharedPreferences.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD, 20));
+        } else if (key.equals(SettingsActivity.KEY_PREF_STANDING_PERIOD)) {
+//            Log.d("Pref", "val: "+sharedPreferences.getInt(SettingsActivity.KEY_PREF_STANDING_PERIOD, 20));
         }
     }
 }

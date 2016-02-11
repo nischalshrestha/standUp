@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:screenOrientation="portrait"
     tools:context=".activity.MainActivity"
     android:id="@+id/ol"
     >
@@ -13,6 +12,7 @@
         android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/status_text_marginTop"
         android:text=""
         android:textSize="@dimen/status_text"
         android:textColor="@color/orange"
@@ -21,43 +21,50 @@
 
     <ImageView
         android:id="@+id/status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/status_width"
+        android:layout_height="@dimen/status_height"
+        android:layout_below="@+id/statusText"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/sit_cyan"
-        android:layout_above="@+id/timer"
+        android:src="@drawable/ic_seat_recline_normal"
         android:layout_marginTop="@dimen/status_marginTop"
         android:layout_marginBottom="@dimen/status_marginBottom"/>
 
-    <TextView
-        android:id="@+id/timer"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/timerLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/default_timer"
-        android:textSize="@dimen/timer_text"
-        android:textColor="@color/cyan"
-        />
+        android:layout_below="@+id/status"
+        android:gravity="center"
+        android:weightSum="1"
+        >
 
-    <TextView
-        android:id="@+id/timerUnit"
-        android:layout_toRightOf="@+id/timer"
-        android:layout_alignBottom="@+id/timer"
-        android:layout_marginBottom="@dimen/timer_text_unit_marginTop"
-        android:layout_marginLeft="@dimen/timer_text_unit_marginTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/timer_unit"
-        android:textSize="@dimen/timer_text_unit"
-        android:textColor="@color/cyan"
-        android:layout_centerInParent="true"
-        />
+        <TextView
+            android:id="@+id/timer"
+            android:layout_weight="0.05"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_timer"
+            android:textSize="@dimen/timer_text"
+            android:textColor="@color/cyan"
+            />
+
+        <TextView
+            android:id="@+id/timerUnit"
+            android:layout_weight="0"
+            android:layout_marginTop="@dimen/timer_text_unit_marginTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timer_unit"
+            android:textSize="@dimen/timer_text_unit"
+            android:textColor="@color/cyan"
+            />
+    </LinearLayout>
 
     <Button
         android:id="@+id/start"
         android:layout_width="@dimen/start_width"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/timer"
+        android:layout_below="@+id/timerLayout"
         android:layout_marginTop="@dimen/start_marginTop"
         android:background="@drawable/rounded_button"
         android:text="@string/start_button"

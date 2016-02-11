@@ -10,7 +10,9 @@ import com.bitsorific.standup.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    public static final String KEY_PREF_SITTING_PERIOD = "sitting_time_preference";
+    public static final String KEY_PREF_SITTING_PERIOD = "sitting_period_preference";
+    public static final String KEY_PREF_STANDING_PERIOD = "standing_period_preference";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
