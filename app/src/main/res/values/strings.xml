@@ -5,11 +5,10 @@
     <string name="time_to_stand">Time to stand up!</string>
     <string name="ready_to_stand">Get ready to stand up!</string>
     <string name="time_to_sit">You can sit down now</string>
-    <string name="reset_timer">0</string>
-    <string name="default_timer">20</string>
     <string name="timer_unit"> min remaining</string>
     <string name="start_button">START SESSION</string>
     <string name="stop_button">STOP SESSION</string>
+    <string name="session_started">Session started!</string>
 
     <!-- About strings -->
     <string name="about">About</string>
@@ -31,9 +30,8 @@
     <string name="pref_summary_sound">Turn sound on/off</string>
     <string name="pref_title_sound">Alarm sound</string>
     <string name="pref_summary_alarm_tone">Pick an alarm sound</string>
-    <string name="pref_title_alarm_tone">Alarm tone</string>
-    <string name="pref_summary_vibrate_style">Pick style of vibrate</string>
-    <string name="pref_title_vibrate_style">Vibrate style</string>
+    <string name="pref_title_alarm_tone_stand">Alarm tone to stand up</string>
+    <string name="pref_title_alarm_tone_sit">Alarm tone to sit down</string>
     <string name="pref_timer_title">Timer</string>
     <string name="pref_title_sitting_period">Sitting period</string>
     <string name="pref_summary_sitting_period">Period of time before standing up (Max: 60 min)</string>

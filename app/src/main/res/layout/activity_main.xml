@@ -15,7 +15,7 @@
         android:layout_marginTop="@dimen/status_text_marginTop"
         android:text=""
         android:textSize="@dimen/status_text"
-        android:textColor="@color/orange"
+        android:textColor="@color/cyan"
         android:layout_centerHorizontal="true"
         />
 
@@ -43,7 +43,7 @@
             android:layout_weight="0.05"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/default_timer"
+            android:text=""
             android:textSize="@dimen/timer_text"
             android:textColor="@color/cyan"
             />
@@ -54,7 +54,7 @@
             android:layout_marginTop="@dimen/timer_text_unit_marginTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/timer_unit"
+            android:text="@string/number_picker_unit"
             android:textSize="@dimen/timer_text_unit"
             android:textColor="@color/cyan"
             />

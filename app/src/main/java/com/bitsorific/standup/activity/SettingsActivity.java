@@ -10,9 +10,15 @@ import com.bitsorific.standup.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    // Sound key constants
+    public static final String KEY_PREF_ALARM_TONE_STAND = "pref_key_alarm_tone_stand";
+    public static final String KEY_PREF_ALARM_TONE_SIT = "pref_key_alarm_tone_sit";
+    public static final String KEY_PREF_SOUND = "pref_key_sound";
+    public static final Boolean PREF_SOUND_DEFAULT = false;
+
+    // Timer key constants
     public static final String KEY_PREF_SITTING_PERIOD = "sitting_period_preference";
     public static final String KEY_PREF_STANDING_PERIOD = "standing_period_preference";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -2,12 +2,17 @@ package com.bitsorific.standup.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -18,10 +23,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bitsorific.standup.R;
+import com.bitsorific.standup.preference.NumberPickerPreference;
+
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
 
+
+    private static final int MINUTE = 60000;
     private TextView timerView;
     private TextView timerUnitView;
 
@@ -47,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private Drawable sit;
     private Drawable stand;
 
+    private Boolean sound = false;
+    private MediaPlayer mpAlarmStand;
+    private MediaPlayer mpAlarmSit;
     private Vibrator v;
 
     private Runnable vibrateAlert = new Runnable() {
@@ -63,59 +78,137 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Runnable soundAlertStand = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                mpAlarmStand.stop();
+                mpAlarmStand.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            long ringLength = mpAlarmStand.getDuration();
+            mpAlarmStand.start();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    mpAlarmStand.stop();
+                }
+            };
+            Timer timer = new Timer();
+            timer.schedule(task, ringLength - 800);
+        }
+    };
+
+    private Runnable soundAlertSit = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                mpAlarmSit.stop();
+                mpAlarmSit.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            long ringLength = mpAlarmSit.getDuration();
+            mpAlarmSit.start();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    mpAlarmSit.stop();
+                }
+            };
+            Timer timer = new Timer();
+            timer.schedule(task, ringLength - 800);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Set up Views
         timerView = (TextView) findViewById(R.id.timer);
         timerUnitView = (TextView) findViewById(R.id.timerUnit);
         statusView = (ImageView) findViewById(R.id.status);
         statusTextView = (TextView) findViewById(R.id.statusText);
-
-        Typeface typeFace = Typeface.createFromAsset(getAssets(),"fonts/Roboto-Thin.ttf");
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
         timerView.setTypeface(typeFace);
 
+        // Set up vars for TextView colors and images
         sitColor = getResources().getColor(R.color.cyan);
         standColor = getResources().getColor(R.color.orange);
-
-        v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-
         sit = getResources().getDrawable(R.drawable.ic_seat_recline_normal);
         stand = getResources().getDrawable(R.drawable.ic_walk);
 
-        // TODO Acquire from settings
-        timePeriodSit = 120000;
-        timePeriodStand = 60000;
+        // Grab timer and sound settings
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int sittingPeriod = prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
+                NumberPickerPreference.SITTING_DEFAULT_VALUE) * MINUTE;
+        int standingPeriod = prefs.getInt(SettingsActivity.KEY_PREF_STANDING_PERIOD,
+                NumberPickerPreference.STANDING_DEFAULT_VALUE) * MINUTE;
+
+        timePeriodSit = sittingPeriod != timePeriodSit ? sittingPeriod : timePeriodSit;
+        timePeriodStand = standingPeriod != timePeriodStand ? standingPeriod : timePeriodStand;
+
+        // Set initial text
+        timerView.setText(""+timePeriodSit / MINUTE);
+        statusTextView.setText("Timer set for "+ timePeriodSit / MINUTE + " min");
+        timerUnitView.setText(R.string.number_picker_unit);
+
+        // Set up CountdownTimers
         setUpTimers();
 
-        // Button to start and stop session
+        // Set up vibrator and/or sound
+        v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+        sound = prefs.getBoolean(SettingsActivity.KEY_PREF_SOUND, SettingsActivity.PREF_SOUND_DEFAULT);
+        if(sound){
+            String uriStand = prefs.getString(SettingsActivity.KEY_PREF_ALARM_TONE_STAND,
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString());
+            String uriSit = prefs.getString(SettingsActivity.KEY_PREF_ALARM_TONE_SIT,
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString());
+            mpAlarmStand = MediaPlayer.create(getApplicationContext(), Uri.parse(uriStand));
+            mpAlarmSit =  MediaPlayer.create(getApplicationContext(), Uri.parse(uriSit));
+        }
+
+        Log.d("Resume", "sit: "+timePeriodSit);
+        Log.d("Resume", "stand: "+timePeriodStand);
+        Log.d("Resume", "sound: "+sound);
+
+        // Set up Button to start and stop session
         startBtn = (Button) findViewById(R.id.start);
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if(startBtn.getText().equals(getString(R.string.start_button))){
-                // Start the sit timer with default (sit) Views and text/color
-                statusView.setImageDrawable(sit);
-                timerView.setTextColor(sitColor);
-                timerUnitView.setTextColor(sitColor);
-                startBtn.setText(R.string.stop_button);
-                sitTimer.start();
-            } else if(startBtn.getText().equals(getString(R.string.stop_button))){
-                // Reset Views and their texts/colors
-                statusTextView.setText("");
-                statusView.setImageDrawable(sit);
-                timerView.setText(R.string.reset_timer);
-                timerView.setTextColor(sitColor);
-                timerUnitView.setTextColor(sitColor);
-                startBtn.setText(R.string.start_button);
-                // Stop running timers
-                if(isSitTimerRunning) {
-                    sitTimer.cancel();
-                } else if(isStandTimerRunning){
-                    standTimer.cancel();;
+                if (startBtn.getText().equals(getString(R.string.start_button))) {
+                    // Sit image and status text above sit image
+                    statusView.setImageDrawable(sit);
+                    statusTextView.setText(R.string.session_started);
+                    // Timer text
+                    timerView.setTextColor(sitColor);
+                    timerUnitView.setText(R.string.timer_unit);
+                    timerUnitView.setTextColor(sitColor);
+                    // Button
+                    startBtn.setText(R.string.stop_button);
+                    sitTimer.start();
+                } else if (startBtn.getText().equals(getString(R.string.stop_button))) {
+                    // Reset Views and their texts/colors
+                    statusView.setImageDrawable(sit);
+                    statusTextView.setText("Timer set for " + timePeriodSit / MINUTE);
+                    // Timer
+                    timerUnitView.setText(R.string.number_picker_unit);
+                    timerView.setText(""+timePeriodSit / MINUTE);
+                    timerView.setTextColor(sitColor);
+                    timerUnitView.setTextColor(sitColor);
+                    // Button
+                    startBtn.setText(R.string.start_button);
+                    // Stop running timers
+                    if (isSitTimerRunning) {
+                        sitTimer.cancel();
+                    } else if (isStandTimerRunning) {
+                        standTimer.cancel();
+                    }
                 }
-            }
             }
         });
 
@@ -128,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Sets up CountDownTimers for sitting and standing based on timePeriodSit and timePeriodStand
-     * set with the default values or from user preferences.
+     * set with the default values or values set in preferences
      */
     private void setUpTimers(){
 
@@ -148,11 +241,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            // Set Views to standing
+            @Override
             public void onFinish() {
                 isSitTimerRunning = false;
-//                handler.post(vibrateAlert);
                 setViews(standColor);
-                vibrateAlert.run();
+                if(!sound) {
+                    mhandler.post(vibrateAlert);
+                } else {
+                    mhandler.post(soundAlertStand);
+                }
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -175,11 +273,17 @@ public class MainActivity extends AppCompatActivity {
                     timerView.setText(String.format("%02d", millisUntilFinished / 60000));
                 }
             }
+
+            // Set Views to sitting
             @Override
             public void onFinish() {
                 isStandTimerRunning = false;
                 setViews(sitColor);
-                vibrateAlert.run();
+                if(!sound) {
+                    mhandler.post(vibrateAlert);
+                } else{
+                    mhandler.post(soundAlertSit);
+                }
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -192,7 +296,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Sets the views' text or color depending on whether it's time to sit/stand.
+     * Convenience function for timers to set the views' text or color depending on whether it's
+     * time to sit/stand.
      * @param color
      */
     public void setViews(Integer color){
@@ -248,10 +353,18 @@ public class MainActivity extends AppCompatActivity {
             standTimer.cancel();
         }
         handler.removeCallbacksAndMessages(null);
+        mhandler.removeCallbacksAndMessages(null);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // Free sound resources
+        if(mpAlarmStand != null) {
+            mpAlarmStand.release();
+            mpAlarmStand = null;
+        }
+        handler.removeCallbacksAndMessages(null);
+        mhandler.removeCallbacksAndMessages(null);
     }
 }

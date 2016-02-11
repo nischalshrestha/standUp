@@ -16,8 +16,14 @@ import com.bitsorific.standup.activity.SettingsActivity;
  */
 public class NumberPickerPreference extends DialogPreference implements DialogInterface.OnClickListener{
 
-    private static final int SITTING_DEFAULT_VALUE = 20;
-    private static final int STANDING_DEFAULT_VALUE = 5;
+    public static final int SITTING_DEFAULT_VALUE = 20;
+    public static final int STANDING_DEFAULT_VALUE = 5;
+
+    private static final int MIN_SITTING_PERIOD = 20;
+    private static final int MIN_STANDING_PERIOD = 5;
+
+    private static final int MAX_SITTING_PERIOD = 60;
+    private static final int MAX_STANDING_PERIOD = 60;
 
     private String key;
     private int mCurrentValue;
@@ -56,12 +62,12 @@ public class NumberPickerPreference extends DialogPreference implements DialogIn
         View dialogView =  super.onCreateDialogView();
         NumberPicker np = (NumberPicker) dialogView.findViewById(R.id.numberPicker);
         if(key.equals(SettingsActivity.KEY_PREF_SITTING_PERIOD)){
-            np.setMaxValue(60);
-            np.setMinValue(20);
+            np.setMaxValue(MAX_SITTING_PERIOD);
+            np.setMinValue(MIN_SITTING_PERIOD);
             np.setValue(this.getPersistedInt(SITTING_DEFAULT_VALUE));
         } else{
-            np.setMaxValue(60);
-            np.setMinValue(5);
+            np.setMaxValue(MAX_STANDING_PERIOD);
+            np.setMinValue(MIN_STANDING_PERIOD);
             np.setValue(this.getPersistedInt(STANDING_DEFAULT_VALUE));
         }
         // set the default values to the view
