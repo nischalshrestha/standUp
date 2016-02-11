@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -171,9 +170,9 @@ public class MainActivity extends AppCompatActivity {
             mpAlarmSit =  MediaPlayer.create(getApplicationContext(), Uri.parse(uriSit));
         }
 
-        Log.d("Resume", "sit: "+timePeriodSit);
-        Log.d("Resume", "stand: "+timePeriodStand);
-        Log.d("Resume", "sound: "+sound);
+//        Log.d("Resume", "sit: "+timePeriodSit);
+//        Log.d("Resume", "stand: "+timePeriodStand);
+//        Log.d("Resume", "sound: "+sound);
 
         // Set up Button to start and stop session
         startBtn = (Button) findViewById(R.id.start);
@@ -194,7 +193,8 @@ public class MainActivity extends AppCompatActivity {
                 } else if (startBtn.getText().equals(getString(R.string.stop_button))) {
                     // Reset Views and their texts/colors
                     statusView.setImageDrawable(sit);
-                    statusTextView.setText("Timer set for " + timePeriodSit / MINUTE);
+                    statusTextView.setText("Timer set for " + timePeriodSit / MINUTE + " min");
+                    statusTextView.setTextColor(sitColor);
                     // Timer
                     timerUnitView.setText(R.string.number_picker_unit);
                     timerView.setText(""+timePeriodSit / MINUTE);
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
             public void onTick(long millisUntilFinished) {
                 isSitTimerRunning = true;
-                Log.d("Timer", "ms until finished: " + (int) millisUntilFinished / 1000);
+//                Log.d("Timer", "ms until finished: " + (int) millisUntilFinished / 1000);
                 long left = millisUntilFinished / 60000;
                 if(left <= 1) {
                     statusTextView.setText(R.string.ready_to_stand);
