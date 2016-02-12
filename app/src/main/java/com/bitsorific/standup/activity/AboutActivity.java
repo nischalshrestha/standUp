@@ -43,6 +43,9 @@ public class AboutActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
             case R.id.rate_on_google_play:
                 final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
                 try {

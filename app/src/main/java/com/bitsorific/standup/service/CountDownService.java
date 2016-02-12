@@ -35,7 +35,7 @@ public class CountDownService extends Service {
     public static final String TYPE_SIT = "sitTimer";
     public static final String TYPE_STAND = "standTimer";
 
-    private Handler handler = new Handler();
+    private Timer timer;
     private CountDownTimer sitTimer;
     private CountDownTimer standTimer;
     private Handler mhandler = new Handler();
@@ -47,9 +47,11 @@ public class CountDownService extends Service {
     private MediaPlayer mpAlarmSit;
     private Vibrator v;
 
-    private TimerTask task = new TimerTask() {
+
+    private class CancelAlarm extends TimerTask {
         @Override
         public void run() {
+            // Do stuff
             if(mpAlarmStand != null && mpAlarmStand.isPlaying()) {
                 mpAlarmStand.stop();
             }
@@ -57,7 +59,7 @@ public class CountDownService extends Service {
                 mpAlarmSit.stop();
             }
         }
-    };
+    }
 
     private Runnable vibrateAlert = new Runnable() {
         int count = 0;
@@ -81,7 +83,9 @@ public class CountDownService extends Service {
                 mpAlarmStand.prepare();
                 long ringLength = mpAlarmStand.getDuration();
                 mpAlarmStand.start();
-                new Timer().schedule(task, ringLength - 800);
+                timer = new Timer("cancel", true);
+                CancelAlarm cancelAlarm = new CancelAlarm();
+                timer.schedule(cancelAlarm, ringLength - 800);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -96,13 +100,14 @@ public class CountDownService extends Service {
                 mpAlarmSit.prepare();
                 long ringLength = mpAlarmSit.getDuration();
                 mpAlarmSit.start();
-                new Timer().schedule(task, ringLength - 800);
+                timer = new Timer("cancel", true);
+                CancelAlarm cancelAlarm = new CancelAlarm();
+                timer.schedule(cancelAlarm, ringLength - 800);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     };
-
 
     @Override
     public void onCreate() {
@@ -133,7 +138,7 @@ public class CountDownService extends Service {
             mpAlarmSit =  MediaPlayer.create(getApplicationContext(), Uri.parse(uriSit));
         }
 
-        sitTimer = new CountDownTimer(60000+MainActivity.MILLIS, MainActivity.MILLIS) {
+        sitTimer = new CountDownTimer(sittingPeriod, MainActivity.MILLIS) {
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.i(TAG, "Countdown seconds remaining for sitTimer: " + millisUntilFinished / MainActivity.MILLIS);
@@ -151,17 +156,12 @@ public class CountDownService extends Service {
                     Log.i(TAG, "int sit timer sound");
                     mhandler.post(soundAlertStand);
                 }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        standTimer.start();
-                    }
-                }, MainActivity.MILLIS);
+                standTimer.start();
                 Log.i(TAG, "Starting standTimer");
             }
         };
 
-        standTimer = new CountDownTimer(60000+MainActivity.MILLIS, MainActivity.MILLIS){
+        standTimer = new CountDownTimer(standingPeriod, MainActivity.MILLIS){
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.i(TAG, "Countdown seconds remaining for standTimer: " + millisUntilFinished / MainActivity.MILLIS);
@@ -179,12 +179,7 @@ public class CountDownService extends Service {
                 } else{
                     mhandler.post(soundAlertSit);
                 }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        sitTimer.start();
-                    }
-                }, MainActivity.MILLIS);
+                sitTimer.start();
                 Log.i(TAG, "Starting sitTimer");
             }
         };
@@ -194,7 +189,7 @@ public class CountDownService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
 
@@ -212,7 +207,9 @@ public class CountDownService extends Service {
             mpAlarmSit.release();
             mpAlarmSit = null;
         }
-        task.cancel();
+        if(timer != null) {
+            timer.cancel();
+        }
         mhandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }

@@ -25,7 +25,6 @@ import com.bitsorific.standup.service.CountDownService;
 
 public class MainActivity extends AppCompatActivity {
 
-
     public static final int MINUTE = 60000;
     public static final int MILLIS = 1000;
 
@@ -39,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView statusTextView;
     private ImageView statusView;
     private Button startBtn;
-
 
     private static Integer standColor;
     private static Integer sitColor;
@@ -71,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         // Grab timer and sound settings
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        Log.d(TAG, "onCreate() called");
+
         // Set up Button to start and stop session
         startBtn = (Button) findViewById(R.id.start);
         startBtn.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 if (startBtn.getText().equals(getString(R.string.start_button))) {
                     // Sit image and status text above sit image
                     statusView.setImageDrawable(sit);
-                    statusTextView.setText(R.string.session_started);
                     // Timer text
                     timerView.setTextColor(sitColor);
                     timerUnitView.setText(R.string.timer_unit);
@@ -119,39 +118,48 @@ public class MainActivity extends AppCompatActivity {
     private void updateGUI(Intent intent) {
         if (intent.getExtras() != null) {
             String timer = intent.getStringExtra("timer");
-            long millisUntilFinished = intent.getLongExtra("countdown", 0);
+            long rem = intent.getLongExtra("countdown", 0);
 
-            long left = millisUntilFinished / MINUTE;
-            if(left <= 1) {
+            // Ex: if 2:50 don't register 1 min
+            int min = (int) rem / MINUTE;
+            if(rem - (min*MINUTE) > 0){
+                min++;
+            }
+
+            if(rem <= 30000) {
                 if(timer.equals(CountDownService.TYPE_SIT)) {
                     statusTextView.setText(R.string.ready_to_stand);
                 }
-                timerView.setText(String.format("< %01d", millisUntilFinished / MINUTE));
-            } else if(left < 10){
-                timerView.setText(String.format("%01d", millisUntilFinished / MINUTE));
-            } else if(left >= 10){
-                timerView.setText(String.format("%02d", millisUntilFinished / MINUTE));
+                timerView.setText("< 1");
+            } else if(min >= 1 && min < 10){
+                timerView.setText(String.format("%01d", min));
+            } else if(rem >= 10){
+                timerView.setText(String.format("%02d", min));
             }
 
             if(timer.equals(CountDownService.TYPE_SIT)){
-                if(millisUntilFinished == 60000){
+                if(rem == timePeriodSit){
                     Log.i(TAG, "Broadcasts receiving from: " + timer);
                 }
-                if(millisUntilFinished / MILLIS == 1){
+                if(rem / MILLIS == 1){
                     setViews(standColor);
                     Log.i(TAG, "Finishing countdown for " + timer);
+                } else if(rem / MILLIS > 1 && timerView.getText().equals("")){
+                    setViews(sitColor);
                 }
             }  else{
-                if(millisUntilFinished == 60000){
+                if(rem == timePeriodStand){
                     Log.i(TAG, "Broadcasts receiving from: " + timer);
                 }
-                if(millisUntilFinished / MILLIS == 1){
+                if(rem / MILLIS == 1){
                     setViews(sitColor);
                     Log.i(TAG, "Finishing countdown for " + timer);
+                } else if(rem / MILLIS > 1 && timerView.getText().equals("")){
+                    setViews(standColor);
                 }
             }
 
-            Log.i(TAG, "Countdown seconds remaining for " + timer + ": " +  millisUntilFinished / MILLIS);
+            Log.i(TAG, "Countdown seconds remaining for " + timer + ": " +  rem / MILLIS);
         }
     }
 
@@ -160,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         // TODO Check if settings have changed
         checkPreferences();
+        Log.d(TAG, "onResume() called");
         registerReceiver(br, new IntentFilter(CountDownService.BROADCAST_COUNTDOWN));
         Log.i(TAG, "Registered broacast receiver");
     }
@@ -197,8 +206,7 @@ public class MainActivity extends AppCompatActivity {
             statusTextView.setText("Timer set for "+ timePeriodSit / MINUTE + " min");
             timerUnitView.setText(R.string.number_picker_unit);
         } else{
-            Log.d("Resume", "service is running!");
-
+            Log.d(TAG, "service is running!");
         }
 
 //        Log.d("Resume", "sit: " + timePeriodSit);

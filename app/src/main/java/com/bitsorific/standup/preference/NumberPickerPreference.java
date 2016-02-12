@@ -16,7 +16,7 @@ import com.bitsorific.standup.activity.SettingsActivity;
  */
 public class NumberPickerPreference extends DialogPreference implements DialogInterface.OnClickListener{
 
-    private static final int MIN_SITTING_PERIOD = 1;
+    private static final int MIN_SITTING_PERIOD = 20;
     private static final int MAX_SITTING_PERIOD = 60;
 
     private int mCurrentValue;
