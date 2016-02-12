@@ -8,18 +8,19 @@
     <string name="timer_unit"> min remaining</string>
     <string name="start_button">START SESSION</string>
     <string name="stop_button">STOP SESSION</string>
+    <string name="session_started">Session started!</string>
 
     <!-- About strings -->
     <string name="about">About</string>
     <string name="about_text">Research has shown that sitting down for prolonged periods of time
-        compromises metabolic health. This means organ damage, muscle degeneration, leg disorders,
-        and a general misalignment of back especially when sitting improperly.\n\nStand Up helps you
-        stay healthy by reminding you to stand up periodically when you plan on sitting down for
-        prolonged periods of time. Start a session before sitting down and customize the timer settings
-        for standing and sitting.\n\nI hope this app is useful to you! You\'re more than welcome to
-        forward your questions/comments/feedback to:\n</string>
+        compromises metabolic health.\n\nStand Up helps you stay healthy by reminding you to stand
+        up periodically when you plan on sitting down for prolonged periods of time. Start a session
+        before sitting down and customize the timer settings for standing and sitting. The app can run
+        in the background as you do other things and will keep reminding you until stopped.\n\nI hope
+        this app is useful to you! You\'re more than welcome to forward your questions/comments/feedback
+        to:\n</string>
     <string name="email_address">nsrocker92@gmail.com\n</string>
-    <string name="source_label">Highly cited article:\n</string>
+    <string name="source_label">Highly cited article:</string>
     <string name="source">Owen, N., Healy, G. N., Matthews, C. E., &amp; Dunstan, D. W. (2010). Too Much Sitting: The Population-Health Science of Sedentary Behavior. Exercise and Sport Sciences Reviews, 38(3), 105–113. http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3404815/</string>
     <string name="eula">End User License Agreement</string>
     <string name="eula_text">This software is provided as-is, with no warranty of any kind.\n\nYour usage of this
