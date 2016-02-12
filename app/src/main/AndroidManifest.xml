@@ -43,6 +43,8 @@
             </meta-data>
         </activity>
 
+        <service android:name=".service.CountDownService"></service>
+
     </application>
 
 </manifest>

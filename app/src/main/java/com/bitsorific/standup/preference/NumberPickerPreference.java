@@ -16,16 +16,9 @@ import com.bitsorific.standup.activity.SettingsActivity;
  */
 public class NumberPickerPreference extends DialogPreference implements DialogInterface.OnClickListener{
 
-    public static final int SITTING_DEFAULT_VALUE = 20;
-    public static final int STANDING_DEFAULT_VALUE = 5;
-
-    private static final int MIN_SITTING_PERIOD = 20;
-    private static final int MIN_STANDING_PERIOD = 5;
-
+    private static final int MIN_SITTING_PERIOD = 1;
     private static final int MAX_SITTING_PERIOD = 60;
-    private static final int MAX_STANDING_PERIOD = 60;
 
-    private String key;
     private int mCurrentValue;
     private int mNewValue;
 
@@ -38,18 +31,13 @@ public class NumberPickerPreference extends DialogPreference implements DialogIn
         setNegativeButtonText(android.R.string.cancel);
 
         setDialogIcon(null);
-
-        key = getKey().toString();
     }
 
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
         if (restorePersistedValue) {
             // Restore existing state
-            mCurrentValue = this.getPersistedInt(SITTING_DEFAULT_VALUE);
-            if(key.equals(SettingsActivity.KEY_PREF_STANDING_PERIOD)){
-                mCurrentValue = this.getPersistedInt(STANDING_DEFAULT_VALUE);
-            }
+            mCurrentValue = this.getPersistedInt(SettingsActivity.SITTING_DEFAULT_VALUE);
         } else {
             // Set default state from the XML attribute
             mCurrentValue = (Integer) defaultValue;
@@ -61,15 +49,9 @@ public class NumberPickerPreference extends DialogPreference implements DialogIn
     protected View onCreateDialogView() {
         View dialogView =  super.onCreateDialogView();
         NumberPicker np = (NumberPicker) dialogView.findViewById(R.id.numberPicker);
-        if(key.equals(SettingsActivity.KEY_PREF_SITTING_PERIOD)){
-            np.setMaxValue(MAX_SITTING_PERIOD);
-            np.setMinValue(MIN_SITTING_PERIOD);
-            np.setValue(this.getPersistedInt(SITTING_DEFAULT_VALUE));
-        } else{
-            np.setMaxValue(MAX_STANDING_PERIOD);
-            np.setMinValue(MIN_STANDING_PERIOD);
-            np.setValue(this.getPersistedInt(STANDING_DEFAULT_VALUE));
-        }
+        np.setMaxValue(MAX_SITTING_PERIOD);
+        np.setMinValue(MIN_SITTING_PERIOD);
+        np.setValue(this.getPersistedInt(SettingsActivity.SITTING_DEFAULT_VALUE));
         // set the default values to the view
         return dialogView;
     }
@@ -91,9 +73,6 @@ public class NumberPickerPreference extends DialogPreference implements DialogIn
 
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
-        if(key.equals(SettingsActivity.KEY_PREF_SITTING_PERIOD)){
-            return a.getInteger(index, SITTING_DEFAULT_VALUE);
-        }
-        return a.getInteger(index, STANDING_DEFAULT_VALUE);
+        return a.getInteger(index, SettingsActivity.SITTING_DEFAULT_VALUE);
     }
 }

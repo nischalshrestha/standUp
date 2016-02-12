@@ -1,19 +1,17 @@
 package com.bitsorific.standup.activity;
 
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,17 +20,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bitsorific.standup.R;
-import com.bitsorific.standup.preference.NumberPickerPreference;
-
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import com.bitsorific.standup.service.CountDownService;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
-    private static final int MINUTE = 60000;
+    public static final int MINUTE = 60000;
+    public static final int MILLIS = 1000;
+
+    private static final String TAG = "MainActivity";
     private TextView timerView;
     private TextView timerUnitView;
 
@@ -43,14 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView statusView;
     private Button startBtn;
 
-    private Handler handler = new Handler();
-    private Handler mhandler = new Handler();
-
-    private CountDownTimer sitTimer;
-    private CountDownTimer standTimer;
-
-    private boolean isSitTimerRunning = false;
-    private boolean isStandTimerRunning = false;
 
     private static Integer standColor;
     private static Integer sitColor;
@@ -58,68 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private Drawable sit;
     private Drawable stand;
 
-    private Boolean sound = false;
-    private MediaPlayer mpAlarmStand;
-    private MediaPlayer mpAlarmSit;
-    private Vibrator v;
-
-    private Runnable vibrateAlert = new Runnable() {
-        int count = 0;
-        @Override
-        public void run() {
-            if (++count <= 3) {
-                // Vibrate for 500 milliseconds
-                v.vibrate(100);
-                mhandler.postDelayed(this, 100);
-            } else {
-                count = 0;
-            }
-        }
-    };
-
-    private Runnable soundAlertStand = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                mpAlarmStand.stop();
-                mpAlarmStand.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            long ringLength = mpAlarmStand.getDuration();
-            mpAlarmStand.start();
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    mpAlarmStand.stop();
-                }
-            };
-            Timer timer = new Timer();
-            timer.schedule(task, ringLength - 800);
-        }
-    };
-
-    private Runnable soundAlertSit = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                mpAlarmSit.stop();
-                mpAlarmSit.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            long ringLength = mpAlarmSit.getDuration();
-            mpAlarmSit.start();
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    mpAlarmSit.stop();
-                }
-            };
-            Timer timer = new Timer();
-            timer.schedule(task, ringLength - 800);
-        }
-    };
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,38 +69,7 @@ public class MainActivity extends AppCompatActivity {
         stand = getResources().getDrawable(R.drawable.ic_walk);
 
         // Grab timer and sound settings
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        int sittingPeriod = prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                NumberPickerPreference.SITTING_DEFAULT_VALUE) * MINUTE;
-        int standingPeriod = prefs.getInt(SettingsActivity.KEY_PREF_STANDING_PERIOD,
-                NumberPickerPreference.STANDING_DEFAULT_VALUE) * MINUTE;
-
-        timePeriodSit = sittingPeriod != timePeriodSit ? sittingPeriod : timePeriodSit;
-        timePeriodStand = standingPeriod != timePeriodStand ? standingPeriod : timePeriodStand;
-
-        // Set initial text
-        timerView.setText(""+timePeriodSit / MINUTE);
-        statusTextView.setText("Timer set for "+ timePeriodSit / MINUTE + " min");
-        timerUnitView.setText(R.string.number_picker_unit);
-
-        // Set up CountdownTimers
-        setUpTimers();
-
-        // Set up vibrator and/or sound
-        v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-        sound = prefs.getBoolean(SettingsActivity.KEY_PREF_SOUND, SettingsActivity.PREF_SOUND_DEFAULT);
-        if(sound){
-            String uriStand = prefs.getString(SettingsActivity.KEY_PREF_ALARM_TONE_STAND,
-                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString());
-            String uriSit = prefs.getString(SettingsActivity.KEY_PREF_ALARM_TONE_SIT,
-                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString());
-            mpAlarmStand = MediaPlayer.create(getApplicationContext(), Uri.parse(uriStand));
-            mpAlarmSit =  MediaPlayer.create(getApplicationContext(), Uri.parse(uriSit));
-        }
-
-//        Log.d("Resume", "sit: "+timePeriodSit);
-//        Log.d("Resume", "stand: "+timePeriodStand);
-//        Log.d("Resume", "sound: "+sound);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         // Set up Button to start and stop session
         startBtn = (Button) findViewById(R.id.start);
@@ -189,7 +86,9 @@ public class MainActivity extends AppCompatActivity {
                     timerUnitView.setTextColor(sitColor);
                     // Button
                     startBtn.setText(R.string.stop_button);
-                    sitTimer.start();
+                    startService(new Intent(getApplicationContext(), CountDownService.class));
+                    Log.i(TAG, "Started service");
+//                    sitTimer.start();
                 } else if (startBtn.getText().equals(getString(R.string.stop_button))) {
                     // Reset Views and their texts/colors
                     statusView.setImageDrawable(sit);
@@ -197,102 +96,114 @@ public class MainActivity extends AppCompatActivity {
                     statusTextView.setTextColor(sitColor);
                     // Timer
                     timerUnitView.setText(R.string.number_picker_unit);
-                    timerView.setText(""+timePeriodSit / MINUTE);
+                    timerView.setText("" + timePeriodSit / MINUTE);
                     timerView.setTextColor(sitColor);
                     timerUnitView.setTextColor(sitColor);
                     // Button
                     startBtn.setText(R.string.start_button);
-                    // Stop running timers
-                    if (isSitTimerRunning) {
-                        sitTimer.cancel();
-                    } else if (isStandTimerRunning) {
-                        standTimer.cancel();
-                    }
+                    stopService(new Intent(getApplicationContext(), CountDownService.class));
+                    Log.i(TAG, "in");
                 }
             }
         });
 
     }
 
+    private BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateGUI(intent); // or whatever method used to update your GUI fields
+        }
+    };
+
+    private void updateGUI(Intent intent) {
+        if (intent.getExtras() != null) {
+            String timer = intent.getStringExtra("timer");
+            long millisUntilFinished = intent.getLongExtra("countdown", 0);
+
+            long left = millisUntilFinished / MINUTE;
+            if(left <= 1) {
+                if(timer.equals(CountDownService.TYPE_SIT)) {
+                    statusTextView.setText(R.string.ready_to_stand);
+                }
+                timerView.setText(String.format("< %01d", millisUntilFinished / MINUTE));
+            } else if(left < 10){
+                timerView.setText(String.format("%01d", millisUntilFinished / MINUTE));
+            } else if(left >= 10){
+                timerView.setText(String.format("%02d", millisUntilFinished / MINUTE));
+            }
+
+            if(timer.equals(CountDownService.TYPE_SIT)){
+                if(millisUntilFinished == 60000){
+                    Log.i(TAG, "Broadcasts receiving from: " + timer);
+                }
+                if(millisUntilFinished / MILLIS == 1){
+                    setViews(standColor);
+                    Log.i(TAG, "Finishing countdown for " + timer);
+                }
+            }  else{
+                if(millisUntilFinished == 60000){
+                    Log.i(TAG, "Broadcasts receiving from: " + timer);
+                }
+                if(millisUntilFinished / MILLIS == 1){
+                    setViews(sitColor);
+                    Log.i(TAG, "Finishing countdown for " + timer);
+                }
+            }
+
+            Log.i(TAG, "Countdown seconds remaining for " + timer + ": " +  millisUntilFinished / MILLIS);
+        }
+    }
+
     @Override
     protected void onResume(){
         super.onResume();
+        // TODO Check if settings have changed
+        checkPreferences();
+        registerReceiver(br, new IntentFilter(CountDownService.BROADCAST_COUNTDOWN));
+        Log.i(TAG, "Registered broacast receiver");
     }
 
-    /**
-     * Sets up CountDownTimers for sitting and standing based on timePeriodSit and timePeriodStand
-     * set with the default values or values set in preferences
-     */
-    private void setUpTimers(){
-
-        sitTimer = new CountDownTimer(timePeriodSit+1000, 60000) {
-
-            public void onTick(long millisUntilFinished) {
-                isSitTimerRunning = true;
-//                Log.d("Timer", "ms until finished: " + (int) millisUntilFinished / 1000);
-                long left = millisUntilFinished / 60000;
-                if(left <= 1) {
-                    statusTextView.setText(R.string.ready_to_stand);
-                    timerView.setText(String.format("< %01d", millisUntilFinished / 60000));
-                } else if(left < 10){
-                    timerView.setText(String.format("%01d", millisUntilFinished / 60000));
-                } else if(left >= 10){
-                    timerView.setText(String.format("%02d", millisUntilFinished / 60000));
-                }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
             }
+        }
+        return false;
+    }
 
-            // Set Views to standing
-            @Override
-            public void onFinish() {
-                isSitTimerRunning = false;
-                setViews(standColor);
-                if(!sound) {
-                    mhandler.post(vibrateAlert);
-                } else {
-                    mhandler.post(soundAlertStand);
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        standTimer.start();
-                    }
-                }, 1000);
-            }
-        };
+    private void checkPreferences(){
 
-        standTimer = new CountDownTimer(timePeriodStand+1000, 60000){
-            @Override
-            public void onTick(long millisUntilFinished) {
-                isStandTimerRunning = true;
-                long left = millisUntilFinished / 60000;
-                if(left <= 1) {
-                    timerView.setText(String.format("< %01d", millisUntilFinished / 60000));
-                } else if(left < 10){
-                    timerView.setText(String.format("%01d", millisUntilFinished / 60000));
-                } else if(left >= 10){
-                    timerView.setText(String.format("%02d", millisUntilFinished / 60000));
-                }
-            }
+        // Grab timer and sound settings
+        int sittingPeriod = prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
+                SettingsActivity.SITTING_DEFAULT_VALUE) * MINUTE;
+        int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
+                SettingsActivity.STANDING_DEFAULT_VALUE)) * MINUTE;
 
-            // Set Views to sitting
-            @Override
-            public void onFinish() {
-                isStandTimerRunning = false;
-                setViews(sitColor);
-                if(!sound) {
-                    mhandler.post(vibrateAlert);
-                } else{
-                    mhandler.post(soundAlertSit);
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        sitTimer.start();
-                    }
-                }, 1000);
-            }
-        };
+        if(timePeriodSit != sittingPeriod){
+            timePeriodSit = sittingPeriod;
+        }
 
+        if(timePeriodStand != standingPeriod){
+            timePeriodStand = standingPeriod;
+        }
+
+        // Set up CountdownTimers
+        if(!isMyServiceRunning(CountDownService.class)) {
+            // Set initial text
+            timerView.setText(""+timePeriodSit / MINUTE);
+            statusTextView.setText("Timer set for "+ timePeriodSit / MINUTE + " min");
+            timerUnitView.setText(R.string.number_picker_unit);
+        } else{
+            Log.d("Resume", "service is running!");
+
+        }
+
+//        Log.d("Resume", "sit: " + timePeriodSit);
+//        Log.d("Resume", "stand: " + timePeriodStand);
+//        Log.d("Resume", "sound: " + sound);
     }
 
     /**
@@ -346,25 +257,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // Stop running timers
-        if(isSitTimerRunning) {
-            sitTimer.cancel();
-        } else if(isStandTimerRunning){
-            standTimer.cancel();
+        unregisterReceiver(br);
+        Log.i(TAG, "Unregistered broacast receiver");
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        try {
+            unregisterReceiver(br);
+        } catch (Exception e) {
+            // Receiver was probably already stopped in onPause()
         }
-        handler.removeCallbacksAndMessages(null);
-        mhandler.removeCallbacksAndMessages(null);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Free sound resources
-        if(mpAlarmStand != null) {
-            mpAlarmStand.release();
-            mpAlarmStand = null;
-        }
-        handler.removeCallbacksAndMessages(null);
-        mhandler.removeCallbacksAndMessages(null);
+        stopService(new Intent(this, CountDownService.class));
+        Log.i(TAG, "Stopped service");
     }
 }

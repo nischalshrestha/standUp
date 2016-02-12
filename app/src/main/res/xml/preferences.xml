@@ -41,13 +41,16 @@
             android:key="sitting_period_preference"
             android:title="@string/pref_title_sitting_period"
             android:summary="@string/pref_summary_sitting_period"
+            android:dialogTitle="@string/dialog_title_sitting_time_preference"
             />
 
-        <com.bitsorific.standup.preference.NumberPickerPreference
+        <EditTextPreference
             android:key="standing_period_preference"
             android:title="@string/pref_title_standing_period"
             android:summary="@string/pref_summary_standing_period"
-            />
+            android:dialogTitle="@string/dialog_title_standing_time_preference"
+            android:inputType="number">
+        </EditTextPreference>
 
     </PreferenceCategory>
 
