@@ -1,5 +1,6 @@
 package com.bitsorific.standup.activity;
 
+import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,8 +16,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bitsorific.standup.R;
@@ -42,10 +45,14 @@ public class MainActivity extends AppCompatActivity {
     private static Integer standColor;
     private static Integer sitColor;
 
+    ProgressBar progressBar;
+
     private Drawable sit;
     private Drawable stand;
 
     private SharedPreferences prefs;
+
+    private int progress = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,9 +109,14 @@ public class MainActivity extends AppCompatActivity {
                     startBtn.setText(R.string.start_button);
                     stopService(new Intent(getApplicationContext(), CountDownService.class));
                     Log.i(TAG, "in");
+                    progress = 0;
+                    progressBar.clearAnimation();
+                    progressBar.setProgress(progress);
                 }
             }
         });
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
     }
 
@@ -125,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
             if(rem - (min*MINUTE) > 0){
                 min++;
             }
+
+            progress += MILLIS;
+
 
             if(rem <= 30000) {
                 if(timer.equals(CountDownService.TYPE_SIT)) {
@@ -157,6 +172,14 @@ public class MainActivity extends AppCompatActivity {
                 } else if(rem / MILLIS > 1 && timerView.getText().equals("")){
                     setViews(standColor);
                 }
+            }
+
+            // Animate progress bar every 30s
+            if(progress % (MINUTE/2) == 0){
+                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", progress - (MINUTE/2), progress); // see this max value coming back here, we animale towards that value
+                animation.setDuration(1000); //in milliseconds
+                animation.setInterpolator(new DecelerateInterpolator());
+                animation.start();
             }
 
             Log.i(TAG, "Countdown seconds remaining for " + timer + ": " +  rem / MILLIS);
@@ -194,9 +217,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(timePeriodSit != sittingPeriod){
             timePeriodSit = sittingPeriod;
+            progressBar.setMax(timePeriodSit);
+            Log.d(TAG, "progress max: "+progressBar.getMax());
         }
 
-        if(timePeriodStand != standingPeriod){
+        if (timePeriodStand != standingPeriod){
             timePeriodStand = standingPeriod;
         }
 

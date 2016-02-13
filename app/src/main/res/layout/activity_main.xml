@@ -19,21 +19,44 @@
         android:layout_centerHorizontal="true"
         />
 
-    <ImageView
-        android:id="@+id/status"
-        android:layout_width="@dimen/status_width"
-        android:layout_height="@dimen/status_height"
+
+    <RelativeLayout
+        android:id="@+id/statusLayout"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_below="@+id/statusText"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_seat_recline_normal"
-        android:layout_marginTop="@dimen/status_marginTop"
-        android:layout_marginBottom="@dimen/status_marginBottom"/>
+        android:foregroundGravity="center"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/status"
+            android:layout_width="@dimen/status_width"
+            android:layout_height="@dimen/status_height"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_seat_recline_normal"
+            android:layout_marginTop="@dimen/status_marginTop"
+            android:layout_marginBottom="@dimen/status_marginBottom"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:max="60000"
+            android:progress="0"
+            android:background="@drawable/circle"
+            android:progressDrawable="@drawable/progress_shape"
+            android:indeterminate="false"/>
+    </RelativeLayout>
+
+
 
     <LinearLayout
         android:id="@+id/timerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/status"
+        android:layout_below="@+id/statusLayout"
         android:gravity="center"
         android:weightSum="1"
         >
@@ -59,6 +82,7 @@
             android:textColor="@color/cyan"
             />
     </LinearLayout>
+
 
     <Button
         android:id="@+id/start"
