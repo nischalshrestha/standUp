@@ -5,6 +5,7 @@
     <string name="time_to_stand">Time to stand up!</string>
     <string name="ready_to_stand">Get ready to stand up!</string>
     <string name="time_to_sit">You can sit down</string>
+    <string name="number_picker_unit"> min</string>
     <string name="timer_unit"> min remaining</string>
     <string name="start_button">START SESSION</string>
     <string name="stop_button">STOP SESSION</string>
@@ -46,8 +47,5 @@
     <string name="dialog_title_standing_time_preference">Enter standing period (min)</string>
     <string name="rate">Rate</string>
     <string name="rate_on_google_play">Rate on Google Play</string>
-    <!-- Number Picker-->
-
-    <string name="number_picker_unit"> min</string>
 
 </resources>

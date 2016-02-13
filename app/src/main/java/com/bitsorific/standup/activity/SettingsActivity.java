@@ -20,6 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
     // Timer key constants
     public static final String KEY_PREF_SITTING_PERIOD = "sitting_period_preference";
     public static final String KEY_PREF_STANDING_PERIOD = "standing_period_preference";
+
     // The way NumberPicker works forces us to pick 0 as the instead of simply any other min
     public static final int SITTING_DEFAULT_VALUE = 0;
     public static final String STANDING_DEFAULT_VALUE = "5";

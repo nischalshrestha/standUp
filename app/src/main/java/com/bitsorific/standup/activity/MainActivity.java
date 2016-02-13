@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,31 +29,39 @@ import com.bitsorific.standup.service.CountDownService;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Constants
     public static final int MINUTE = 60000;
     public static final int MILLIS = 1000;
-
     private static final String TAG = "MainActivity";
+
+    // Timer
     private TextView timerView;
     private TextView timerUnitView;
-
     private int timePeriodStand;
     private int timePeriodSit;
+    private long remainingMillis;
 
+    // Status
     private TextView statusTextView;
     private ImageView statusView;
     private Button startBtn;
+    public static int standColor;
+    public static int sitColor;
+    private int currentStatus = sitColor;
 
-    private static Integer standColor;
-    private static Integer sitColor;
+    // Animation
+    private Handler handler = new Handler();
+    private ProgressBar progressBar;
+    private int progress = 0;
 
-    ProgressBar progressBar;
-
+    // Drawables to reference to
     private Drawable sit;
     private Drawable stand;
 
     private SharedPreferences prefs;
 
-    private int progress = 0;
+    // Flag to update progress UI when resuming activity
+    private boolean justIn = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,53 +82,83 @@ public class MainActivity extends AppCompatActivity {
         sit = getResources().getDrawable(R.drawable.ic_seat_recline_normal);
         stand = getResources().getDrawable(R.drawable.ic_walk);
 
+        // Set up progress bar and button to start/stop timers
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        startBtn = (Button) findViewById(R.id.start);
+
+        // If we're not already running the timers, set views to default values
+        if(!isMyServiceRunning(CountDownService.class)) {
+            setDefaultViews();
+        }
+
         // Grab timer and sound settings
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        checkPreferences();
 
-        Log.d(TAG, "onCreate() called");
+//        Log.d(TAG, "onCreate() called");
 
-        // Set up Button to start and stop session
-        startBtn = (Button) findViewById(R.id.start);
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (startBtn.getText().equals(getString(R.string.start_button))) {
-                    // Sit image and status text above sit image
-                    statusView.setImageDrawable(sit);
-                    // Timer text
-                    timerView.setTextColor(sitColor);
+                    // Sit off service to start timer(s)
+                    statusTextView.setText(R.string.time_to_sit);
                     timerUnitView.setText(R.string.timer_unit);
-                    timerUnitView.setTextColor(sitColor);
-                    // Button
                     startBtn.setText(R.string.stop_button);
                     startService(new Intent(getApplicationContext(), CountDownService.class));
                     Log.i(TAG, "Started service");
-//                    sitTimer.start();
                 } else if (startBtn.getText().equals(getString(R.string.stop_button))) {
                     // Reset Views and their texts/colors
-                    statusView.setImageDrawable(sit);
-                    statusTextView.setText("Timer set for " + timePeriodSit / MINUTE + " min");
-                    statusTextView.setTextColor(sitColor);
-                    // Timer
-                    timerUnitView.setText(R.string.number_picker_unit);
-                    timerView.setText("" + timePeriodSit / MINUTE);
-                    timerView.setTextColor(sitColor);
-                    timerUnitView.setTextColor(sitColor);
-                    // Button
-                    startBtn.setText(R.string.start_button);
+                    setDefaultViews();
                     stopService(new Intent(getApplicationContext(), CountDownService.class));
-                    Log.i(TAG, "in");
                     progress = 0;
                     progressBar.clearAnimation();
                     progressBar.setProgress(progress);
+                    handler.removeCallbacksAndMessages(null);
                 }
             }
         });
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(br, new IntentFilter(CountDownService.BROADCAST_COUNTDOWN));
+        // If service is already running set appropriate values for views
+        if(isMyServiceRunning(CountDownService.class)){
+            startBtn.setText(R.string.stop_button);
+            timerUnitView.setText(R.string.timer_unit);
+            setViews(currentStatus);
+            justIn = true; //flag for updating ui
+        } else{
+            setDefaultViews();
+        }
+        Log.i(TAG, "Registered broacast receiver");
+    }
+
+    /**
+     * Reset Views to default values
+     */
+    public void setDefaultViews(){
+        progress = 0;
+        currentStatus = sitColor;
+        statusView.setImageDrawable(sit);
+        // Indicate what the timer number means
+        statusTextView.setText("Timer set for " + timePeriodSit / MINUTE + " min");
+        statusTextView.setTextColor(sitColor);
+        // Timer unit (min remaining)
+        timerUnitView.setText(R.string.number_picker_unit);
+        timerView.setText("" + timePeriodSit / MINUTE);
+        timerView.setTextColor(sitColor);
+        timerUnitView.setTextColor(sitColor);
+        // Button
+        startBtn.setText(R.string.start_button);
+    }
+
+    /**
+     * BroadcastReceive for the CountDownTimerService
+     */
     private BroadcastReceiver br = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -129,73 +168,59 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateGUI(Intent intent) {
         if (intent.getExtras() != null) {
-            String timer = intent.getStringExtra("timer");
-            long rem = intent.getLongExtra("countdown", 0);
+            int timer = intent.getIntExtra(CountDownService.EXTRA_TIMER, 0);
+            remainingMillis = intent.getLongExtra(CountDownService.EXTRA_COUNTDOWN, 0);
 
-            // Ex: if 2:50 don't register 1 min
-            int min = (int) rem / MINUTE;
-            if(rem - (min*MINUTE) > 0){
-                min++;
-            }
+            // If there are secs left for the minute, display the minute
+            // Ex: 2:50 should be registered as 2 min not 1 min
+            int min = (int) remainingMillis / MINUTE;
+            min += (remainingMillis - (min*MINUTE)) > 0 ? 1: 0;
 
-            progress += MILLIS;
-
-
-            if(rem <= 30000) {
-                if(timer.equals(CountDownService.TYPE_SIT)) {
+            // Set the timer value
+            if(remainingMillis <= 30000) {
+                if(timer == sitColor) {
                     statusTextView.setText(R.string.ready_to_stand);
                 }
                 timerView.setText("< 1");
             } else if(min >= 1 && min < 10){
                 timerView.setText(String.format("%01d", min));
-            } else if(rem >= 10){
+            } else if(remainingMillis >= 10){
                 timerView.setText(String.format("%02d", min));
             }
 
-            if(timer.equals(CountDownService.TYPE_SIT)){
-                if(rem == timePeriodSit){
-                    Log.i(TAG, "Broadcasts receiving from: " + timer);
-                }
-                if(rem / MILLIS == 1){
+            // Set the proper views and update currentStatus so it can be saved if activity's destroyed
+            if(timer == sitColor){
+                currentStatus = sitColor;
+                if(remainingMillis / MILLIS == 1){
                     setViews(standColor);
                     Log.i(TAG, "Finishing countdown for " + timer);
-                } else if(rem / MILLIS > 1 && timerView.getText().equals("")){
-                    setViews(sitColor);
                 }
             }  else{
-                if(rem == timePeriodStand){
-                    Log.i(TAG, "Broadcasts receiving from: " + timer);
-                }
-                if(rem / MILLIS == 1){
+                currentStatus = standColor;
+                if(remainingMillis / MILLIS == 1){
                     setViews(sitColor);
                     Log.i(TAG, "Finishing countdown for " + timer);
-                } else if(rem / MILLIS > 1 && timerView.getText().equals("")){
-                    setViews(standColor);
                 }
             }
 
-            // Animate progress bar every 30s
-            if(progress % (MINUTE/2) == 0){
-                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", progress - (MINUTE/2), progress); // see this max value coming back here, we animale towards that value
-                animation.setDuration(1000); //in milliseconds
-                animation.setInterpolator(new DecelerateInterpolator());
-                animation.start();
+            // Only update progress bar every min for efficiency and update if resuming
+            if(remainingMillis % MINUTE < 1000) {
+//                Log.d("modulo","updating progress bar since modulo was 0!");
+                updateProgress(currentStatus);
+            } else if(justIn){
+//                Log.d("modulo","updating progress bar since we just resumed!");
+                updateProgress(currentStatus);
+                justIn = false;
             }
 
-            Log.i(TAG, "Countdown seconds remaining for " + timer + ": " +  rem / MILLIS);
         }
     }
 
-    @Override
-    protected void onResume(){
-        super.onResume();
-        // TODO Check if settings have changed
-        checkPreferences();
-        Log.d(TAG, "onResume() called");
-        registerReceiver(br, new IntentFilter(CountDownService.BROADCAST_COUNTDOWN));
-        Log.i(TAG, "Registered broacast receiver");
-    }
-
+    /**
+     * Convenience function to check whether or not the CountDownService is currently running
+     * @param serviceClass
+     * @return
+     */
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -206,6 +231,9 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * Updates settings fetched from the SharedPreferences
+     */
     private void checkPreferences(){
 
         // Grab timer and sound settings
@@ -225,16 +253,6 @@ public class MainActivity extends AppCompatActivity {
             timePeriodStand = standingPeriod;
         }
 
-        // Set up CountdownTimers
-        if(!isMyServiceRunning(CountDownService.class)) {
-            // Set initial text
-            timerView.setText(""+timePeriodSit / MINUTE);
-            statusTextView.setText("Timer set for "+ timePeriodSit / MINUTE + " min");
-            timerUnitView.setText(R.string.number_picker_unit);
-        } else{
-            Log.d(TAG, "service is running!");
-        }
-
 //        Log.d("Resume", "sit: " + timePeriodSit);
 //        Log.d("Resume", "stand: " + timePeriodStand);
 //        Log.d("Resume", "sound: " + sound);
@@ -245,9 +263,9 @@ public class MainActivity extends AppCompatActivity {
      * time to sit/stand.
      * @param color
      */
-    public void setViews(Integer color){
+    public void setViews(int color){
 
-        if(color.equals(sitColor)){
+        if(color == sitColor){
             timerView.setTextColor(sitColor);
             timerUnitView.setTextColor(sitColor);
             statusTextView.setTextColor(sitColor);
@@ -262,6 +280,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    /**
+     * Restore the progress on the progress bar
+     * @param color
+     */
+    public void updateProgress(int color){
+
+        if(color == sitColor){
+            progress = timePeriodSit - (int) remainingMillis;
+            Log.d(TAG, "updating progressbar for sitColor!");
+        } else{
+            progress = timePeriodStand - (int) remainingMillis;
+            Log.d(TAG, "updating progressbar for standColor!");
+        }
+
+        Log.d("Progress", "amount to progress: "+progress);
+
+        //
+        handler.post(updateUI);
+
+    }
+
+    private Runnable updateUI = new Runnable() {
+        @Override
+        public void run() {
+            ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getProgress(), progress); // see this max value coming back here, we animale towards that value
+            animation.setDuration(1000); //in milliseconds
+            animation.setInterpolator(new DecelerateInterpolator());
+            animation.start();
+        }
+    };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

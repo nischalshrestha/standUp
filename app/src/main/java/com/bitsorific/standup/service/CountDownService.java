@@ -23,31 +23,37 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Sets up CountDownTimers for sitting and standing based on timePeriodSit and timePeriodStand
- * set with the default values or values set in preferences.
+ * This Service class sets up CountDownTimers for sitting and standing based on timePeriodSit and
+ * timePeriodStand set with the default values or user set from preferences.
  *
  * Created by nischal on 2/11/16.
  */
 public class CountDownService extends Service {
 
+    // Constants
     private static final String TAG = "CountDownService";
     public static final String BROADCAST_COUNTDOWN = "com.bitsorific.standup.countdown_update";
-    public static final String TYPE_SIT = "sitTimer";
-    public static final String TYPE_STAND = "standTimer";
+    public static final String EXTRA_TIMER = "timer";
+    public static final String EXTRA_COUNTDOWN = "countdown";
 
+    // Timers
     private Timer timer;
     private CountDownTimer sitTimer;
     private CountDownTimer standTimer;
     private Handler mhandler = new Handler();
 
+    // Intent for broadcasting
     private Intent i = new Intent(BROADCAST_COUNTDOWN);
 
+    // Sound/vibrator
     private Boolean sound = false;
     private MediaPlayer mpAlarmStand;
     private MediaPlayer mpAlarmSit;
     private Vibrator v;
 
-
+    /**
+     * Timer to cancel media players after playing its length
+     */
     private class CancelAlarm extends TimerTask {
         @Override
         public void run() {
@@ -61,6 +67,9 @@ public class CountDownService extends Service {
         }
     }
 
+    /**
+     * Vibrate 3 times (TODO: ALLOW MORE OPTIONS LIKE PULSE AND PULSE SPEED)
+     */
     private Runnable vibrateAlert = new Runnable() {
         int count = 0;
         @Override
@@ -75,6 +84,9 @@ public class CountDownService extends Service {
         }
     };
 
+    /**
+     * Alarm tone for standing up
+     */
     private Runnable soundAlertStand = new Runnable() {
         @Override
         public void run() {
@@ -92,6 +104,9 @@ public class CountDownService extends Service {
         }
     };
 
+    /**
+     * Alarm tone for sitting back down
+     */
     private Runnable soundAlertSit = new Runnable() {
         @Override
         public void run() {
@@ -122,8 +137,8 @@ public class CountDownService extends Service {
         int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
                 SettingsActivity.STANDING_DEFAULT_VALUE)) * MainActivity.MINUTE;
 
-        Log.d("Resume", "sit: " + sittingPeriod);
-        Log.d("Resume", "stand: " + standingPeriod);
+//        Log.d("Resume", "sit: " + sittingPeriod);
+//        Log.d("Resume", "stand: " + standingPeriod);
 
         // Check sound
         v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -138,49 +153,49 @@ public class CountDownService extends Service {
             mpAlarmSit =  MediaPlayer.create(getApplicationContext(), Uri.parse(uriSit));
         }
 
+        // Sitting down timer
         sitTimer = new CountDownTimer(sittingPeriod, MainActivity.MILLIS) {
             @Override
             public void onTick(long millisUntilFinished) {
-                Log.i(TAG, "Countdown seconds remaining for sitTimer: " + millisUntilFinished / MainActivity.MILLIS);
-                i.putExtra("timer", TYPE_SIT);
-                i.putExtra("countdown", millisUntilFinished);
+                Log.i(TAG, "Countdown seconds remaining for sitTimer: " + millisUntilFinished % MainActivity.MINUTE);
+                i.putExtra(EXTRA_TIMER, MainActivity.sitColor);
+                i.putExtra(EXTRA_COUNTDOWN, millisUntilFinished);
                 sendBroadcast(i);
             }
 
             @Override
             public void onFinish() {
-                Log.i(TAG, "sitTimer finished");
+//                Log.i(TAG, "sitTimer finished");
                 if(!sound) {
                     mhandler.post(vibrateAlert);
                 } else {
-                    Log.i(TAG, "int sit timer sound");
                     mhandler.post(soundAlertStand);
                 }
                 standTimer.start();
-                Log.i(TAG, "Starting standTimer");
             }
         };
 
+        // Standing up timer
         standTimer = new CountDownTimer(standingPeriod, MainActivity.MILLIS){
             @Override
             public void onTick(long millisUntilFinished) {
-                Log.i(TAG, "Countdown seconds remaining for standTimer: " + millisUntilFinished / MainActivity.MILLIS);
-                i.putExtra("timer", TYPE_STAND);
-                i.putExtra("countdown", millisUntilFinished);
+                Log.i(TAG, "Countdown seconds remaining for standTimer: " + millisUntilFinished % MainActivity.MINUTE);
+                i.putExtra(EXTRA_TIMER, MainActivity.standColor);
+                i.putExtra(EXTRA_COUNTDOWN, millisUntilFinished);
                 sendBroadcast(i);
             }
 
             // Set Views to sitting
             @Override
             public void onFinish() {
-                Log.i(TAG, "standTimer finished");
+//                Log.i(TAG, "standTimer finished");
                 if(!sound) {
                     mhandler.post(vibrateAlert);
                 } else{
                     mhandler.post(soundAlertSit);
                 }
                 sitTimer.start();
-                Log.i(TAG, "Starting sitTimer");
+//                Log.i(TAG, "Starting sitTimer");
             }
         };
 
@@ -195,10 +210,11 @@ public class CountDownService extends Service {
 
     @Override
     public void onDestroy() {
+        // Cancel timers
         sitTimer.cancel();
         standTimer.cancel();
         Log.i(TAG, "CountDownService cancelled");
-        // Free sound resources
+        // Free mp resources and any messages on handler
         if(mpAlarmStand != null) {
             mpAlarmStand.release();
             mpAlarmStand = null;
