@@ -86,14 +86,13 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         startBtn = (Button) findViewById(R.id.start);
 
+        // Grab timer and sound settings
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         // If we're not already running the timers, set views to default values
         if(!isMyServiceRunning(CountDownService.class)) {
             setDefaultViews();
         }
-
-        // Grab timer and sound settings
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        checkPreferences();
 
 //        Log.d(TAG, "onCreate() called");
 
@@ -126,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         registerReceiver(br, new IntentFilter(CountDownService.BROADCAST_COUNTDOWN));
         // If service is already running set appropriate values for views
+        checkPreferences();
         if(isMyServiceRunning(CountDownService.class)){
             startBtn.setText(R.string.stop_button);
             timerUnitView.setText(R.string.timer_unit);
