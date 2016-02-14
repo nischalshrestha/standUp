@@ -15,6 +15,7 @@ import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -65,9 +66,12 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
 
-    // Flag to update progress UI when resuming activity
+    // Flags to update progress UI when resuming activity and switching states
     private boolean justIn = false;
     private boolean transition = false;
+
+    // Intent for broadcasting
+    private IntentFilter filter = new IntentFilter(CountDownService.BROADCAST_COUNTDOWN);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,12 +101,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Grab timer and sound settings
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-        // If we're not already running the timers, set views to default values
-        if(!isMyServiceRunning(CountDownService.class)) {
-            setDefaultViews();
-        }
-
 //        Log.d(TAG, "onCreate() called");
 
         startBtn.setOnClickListener(new View.OnClickListener() {
@@ -132,17 +130,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(br, new IntentFilter(CountDownService.BROADCAST_COUNTDOWN));
-        // If service is already running set appropriate values for views
+        // Register receiver for local broadcasts
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
+        bm.registerReceiver(br, filter);
         checkPreferences();
-        if(isMyServiceRunning(CountDownService.class)){
+        // If service is already running set appropriate values for views
+        if(isMyServiceRunning(CountDownService.class)) {
             startBtn.setText(R.string.stop_button);
             timerUnitView.setText(R.string.timer_unit);
-            setViews(currentStatus);
-            justIn = true; //flag for updating ui
         } else{
             setDefaultViews();
         }
+        justIn = true; //flag for updating ui
         Log.i(TAG, "Registered broacast receiver");
     }
 
@@ -172,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Grab timer and sound settings
         int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                SettingsActivity.SITTING_DEFAULT_VALUE) * 5) + 20) * MINUTE;
+                SettingsActivity.SITTING_DEFAULT_VALUE) * 1) + 1) * MINUTE;
 
         int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
                 SettingsActivity.STANDING_DEFAULT_VALUE)) * MINUTE;
@@ -180,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
         if(timePeriodSit != sittingPeriod){
             timePeriodSit = sittingPeriod;
             progressBar.setMax(timePeriodSit);
-//            Log.d(TAG, "progress max: "+progressBar.getMax());
         }
 
         if (timePeriodStand != standingPeriod){
@@ -214,9 +212,6 @@ public class MainActivity extends AppCompatActivity {
 
             // Set the timer value
             if(remainingMillis <= 30000) {
-                if(timer == sitColor) {
-                    statusTextView.setText(R.string.ready_to_stand);
-                }
                 timerView.setText("< 1");
             } else if(min >= 1 && min < 10){
                 timerView.setText(String.format("%01d", min));
@@ -251,8 +246,8 @@ public class MainActivity extends AppCompatActivity {
             if(remainingMillis % MINUTE < 1000) {
                 updateProgress(currentStatus);
             } else if(justIn){
+                setViews(currentStatus);
                 updateProgress(currentStatus);
-                justIn = false;
             }
 
         }
@@ -312,13 +307,17 @@ public class MainActivity extends AppCompatActivity {
     public void updateProgress(int color){
 
         if(color == sitColor){
+            progressBar.setMax(timePeriodSit);
             progress = timePeriodSit - (int) remainingMillis;
         } else{
+            progressBar.setMax(timePeriodStand);
             progress = timePeriodStand - (int) remainingMillis;
         }
 
-//        Log.d("Progress", "amount to progress: "+progress);
-
+        if(justIn){
+//            progressBar.setProgress(0);
+            justIn = false;
+        }
         // Run animation in a different thread
         updateUI.run();
 
@@ -346,12 +345,10 @@ public class MainActivity extends AppCompatActivity {
                         if (currentStatus == sitColor) {
                             bgShape.setColor(standColor);
                             progressBar.setMax(timePeriodStand);
-//                            Log.d("max", "color: " + "sitColor" + " max: " + progressBar.getMax());
                         }
                         if (currentStatus == standColor) {
                             bgShape.setColor(sitColor);
                             progressBar.setMax(timePeriodSit);
-//                            Log.d("max", "color: " + "standColor" + " max: " + progressBar.getMax());
                         }
                     }
                 }
@@ -394,7 +391,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(br);
+        // Unregister receiver when activity is in the background
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
+        bm.unregisterReceiver(br);
         Log.i(TAG, "Unregistered broacast receiver");
     }
 
@@ -402,7 +401,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
         try {
-            unregisterReceiver(br);
+            // Unregister receiver when activity is not visible
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
+            bm.unregisterReceiver(br);
         } catch (Exception e) {
             // Receiver was probably already stopped in onPause()
         }

@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.bitsorific.standup.activity.MainActivity;
@@ -133,7 +134,7 @@ public class CountDownService extends Service {
         // Grab timer and sound settings
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                SettingsActivity.SITTING_DEFAULT_VALUE) * 5) + 20) * MainActivity.MINUTE;
+                SettingsActivity.SITTING_DEFAULT_VALUE) * 1) + 1) * MainActivity.MINUTE;
         int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
                 SettingsActivity.STANDING_DEFAULT_VALUE)) * MainActivity.MINUTE;
 
@@ -157,10 +158,10 @@ public class CountDownService extends Service {
         sitTimer = new CountDownTimer(sittingPeriod, MainActivity.MILLIS) {
             @Override
             public void onTick(long millisUntilFinished) {
-                Log.i(TAG, "Countdown seconds remaining for sitTimer: " + millisUntilFinished % MainActivity.MINUTE);
+//                Log.i(TAG, "Countdown seconds remaining for sitTimer: " + millisUntilFinished % MainActivity.MINUTE);
                 i.putExtra(EXTRA_TIMER, MainActivity.sitColor);
                 i.putExtra(EXTRA_COUNTDOWN, millisUntilFinished);
-                sendBroadcast(i);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(i);
             }
 
             @Override
@@ -179,10 +180,11 @@ public class CountDownService extends Service {
         standTimer = new CountDownTimer(standingPeriod, MainActivity.MILLIS){
             @Override
             public void onTick(long millisUntilFinished) {
-                Log.i(TAG, "Countdown seconds remaining for standTimer: " + millisUntilFinished % MainActivity.MINUTE);
+//                Log.i(TAG, "Countdown seconds remaining for standTimer: " + millisUntilFinished % MainActivity.MINUTE);
                 i.putExtra(EXTRA_TIMER, MainActivity.standColor);
                 i.putExtra(EXTRA_COUNTDOWN, millisUntilFinished);
                 sendBroadcast(i);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(i);
             }
 
             // Set Views to sitting
@@ -201,6 +203,7 @@ public class CountDownService extends Service {
 
         sitTimer.start();
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
