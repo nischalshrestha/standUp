@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         if(timePeriodSit != sittingPeriod){
             timePeriodSit = sittingPeriod;
             progressBar.setMax(timePeriodSit);
-            Log.d(TAG, "progress max: "+progressBar.getMax());
+//            Log.d(TAG, "progress max: "+progressBar.getMax());
         }
 
         if (timePeriodStand != standingPeriod){

@@ -15,6 +15,7 @@
 
     <!-- Button -->
     <dimen name="start_width">200dp</dimen>
+    <dimen name="start_marginBot">40dp</dimen>
     <dimen name="start_marginTop">100dp</dimen>
     <dimen name="start_text">20sp</dimen>
 

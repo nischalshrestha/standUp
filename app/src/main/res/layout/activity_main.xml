@@ -25,6 +25,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_below="@+id/statusText"
+        android:layout_marginTop="@dimen/status_marginTop"
         android:foregroundGravity="center"
         android:layout_centerHorizontal="true">
 
@@ -57,6 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/statusLayout"
+        android:layout_marginTop="@dimen/timer_text_unit_marginTop"
         android:gravity="center"
         android:weightSum="1"
         >
@@ -88,8 +90,9 @@
         android:id="@+id/start"
         android:layout_width="@dimen/start_width"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/timerLayout"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/start_marginTop"
+        android:layout_marginBottom="@dimen/start_marginBot"
         android:background="@drawable/rounded_button"
         android:text="@string/start_button"
         android:textSize="@dimen/start_text"
