@@ -1,5 +1,6 @@
 package com.bitsorific.standup.activity;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
@@ -9,6 +10,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -53,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private ProgressBar progressBar;
     private int progress = 0;
+    // The ring shape
+    private GradientDrawable bgShape;
 
     // Drawables to reference to
     private Drawable sit;
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Flag to update progress UI when resuming activity
     private boolean justIn = false;
+    private boolean transition = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up progress bar and button to start/stop timers
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        RotateDrawable rd = (RotateDrawable) progressBar.getProgressDrawable();
+        bgShape = (GradientDrawable) rd.getDrawable();
+
         startBtn = (Button) findViewById(R.id.start);
 
         // Grab timer and sound settings
@@ -157,6 +166,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Updates settings fetched from the SharedPreferences
+     */
+    private void checkPreferences(){
+
+        // Grab timer and sound settings
+        int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
+                SettingsActivity.SITTING_DEFAULT_VALUE) * 5) + 20) * MINUTE;
+
+        int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
+                SettingsActivity.STANDING_DEFAULT_VALUE)) * MINUTE;
+
+        if(timePeriodSit != sittingPeriod){
+            timePeriodSit = sittingPeriod;
+            progressBar.setMax(timePeriodSit);
+            Log.d(TAG, "progress max: "+progressBar.getMax());
+        }
+
+        if (timePeriodStand != standingPeriod){
+            timePeriodStand = standingPeriod;
+        }
+
+//        Log.d("Resume", "sit: " + timePeriodSit);
+//        Log.d("Resume", "stand: " + timePeriodStand);
+//        Log.d("Resume", "sound: " + sound);
+    }
+
+    /**
      * BroadcastReceive for the CountDownTimerService
      */
     private BroadcastReceiver br = new BroadcastReceiver() {
@@ -192,23 +228,29 @@ public class MainActivity extends AppCompatActivity {
             if(timer == sitColor){
                 currentStatus = sitColor;
                 if(remainingMillis / MILLIS == 1){
+                    transition = true;
                     setViews(standColor);
                     Log.i(TAG, "Finishing countdown for " + timer);
+                    progress = timePeriodSit;
+                    updateUI.run();
                 }
             }  else{
                 currentStatus = standColor;
                 if(remainingMillis / MILLIS == 1){
+                    transition = true;
                     setViews(sitColor);
+                    progress = timePeriodStand;
+                    updateUI.run();
                     Log.i(TAG, "Finishing countdown for " + timer);
                 }
             }
 
+//            Log.d("modulo","modulo val: "+(remainingMillis % MINUTE));
+
             // Only update progress bar every min for efficiency and update if resuming
             if(remainingMillis % MINUTE < 1000) {
-//                Log.d("modulo","updating progress bar since modulo was 0!");
                 updateProgress(currentStatus);
             } else if(justIn){
-//                Log.d("modulo","updating progress bar since we just resumed!");
                 updateProgress(currentStatus);
                 justIn = false;
             }
@@ -232,33 +274,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Updates settings fetched from the SharedPreferences
-     */
-    private void checkPreferences(){
-
-        // Grab timer and sound settings
-        int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                SettingsActivity.SITTING_DEFAULT_VALUE) * 5) + 20) * MINUTE;
-
-        int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
-                SettingsActivity.STANDING_DEFAULT_VALUE)) * MINUTE;
-
-        if(timePeriodSit != sittingPeriod){
-            timePeriodSit = sittingPeriod;
-            progressBar.setMax(timePeriodSit);
-            Log.d(TAG, "progress max: "+progressBar.getMax());
-        }
-
-        if (timePeriodStand != standingPeriod){
-            timePeriodStand = standingPeriod;
-        }
-
-//        Log.d("Resume", "sit: " + timePeriodSit);
-//        Log.d("Resume", "stand: " + timePeriodStand);
-//        Log.d("Resume", "sound: " + sound);
-    }
-
-    /**
      * Convenience function for timers to set the views' text or color depending on whether it's
      * time to sit/stand.
      * @param color
@@ -271,12 +286,21 @@ public class MainActivity extends AppCompatActivity {
             statusTextView.setTextColor(sitColor);
             statusTextView.setText(R.string.time_to_sit);
             statusView.setImageDrawable(sit);
+            bgShape.setColor(sitColor);
+            // Stay on standColor if we're just switching over to sitting for the rest of the
+            // orange progress
+            if(transition)
+                bgShape.setColor(standColor);
         } else {
             timerView.setTextColor(standColor);
             timerUnitView.setTextColor(standColor);
             statusTextView.setTextColor(standColor);
             statusTextView.setText(R.string.time_to_stand);
             statusView.setImageDrawable(stand);
+            bgShape.setColor(standColor);
+            // Same as above
+            if(transition)
+                bgShape.setColor(sitColor);
         }
 
     }
@@ -289,26 +313,55 @@ public class MainActivity extends AppCompatActivity {
 
         if(color == sitColor){
             progress = timePeriodSit - (int) remainingMillis;
-            Log.d(TAG, "updating progressbar for sitColor!");
         } else{
             progress = timePeriodStand - (int) remainingMillis;
-            Log.d(TAG, "updating progressbar for standColor!");
         }
 
-        Log.d("Progress", "amount to progress: "+progress);
+//        Log.d("Progress", "amount to progress: "+progress);
 
-        //
-        handler.post(updateUI);
+        // Run animation in a different thread
+        updateUI.run();
 
     }
 
     private Runnable updateUI = new Runnable() {
         @Override
         public void run() {
+            // Moves the current Thread into the background
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getProgress(), progress); // see this max value coming back here, we animale towards that value
             animation.setDuration(1000); //in milliseconds
             animation.setInterpolator(new DecelerateInterpolator());
             animation.start();
+            animation.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {}
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (transition) {
+                        transition = false;
+                        progressBar.setProgress(0);
+                        // Switch the color back to the current status
+                        if (currentStatus == sitColor) {
+                            bgShape.setColor(standColor);
+                            progressBar.setMax(timePeriodStand);
+//                            Log.d("max", "color: " + "sitColor" + " max: " + progressBar.getMax());
+                        }
+                        if (currentStatus == standColor) {
+                            bgShape.setColor(sitColor);
+                            progressBar.setMax(timePeriodSit);
+//                            Log.d("max", "color: " + "standColor" + " max: " + progressBar.getMax());
+                        }
+                    }
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {}
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {}
+            });
         }
     };
 

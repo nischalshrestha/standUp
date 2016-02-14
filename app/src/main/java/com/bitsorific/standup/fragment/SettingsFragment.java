@@ -39,7 +39,6 @@ public class SettingsFragment extends PreferenceFragment
         // Handle input
         if (key.equals(SettingsActivity.KEY_PREF_SITTING_PERIOD)) {
 //            Log.d("Pref", "val: "+sharedPreferences.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD, 20));
-
         }
     }
 }
