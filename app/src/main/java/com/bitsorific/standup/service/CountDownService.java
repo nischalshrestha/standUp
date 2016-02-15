@@ -75,15 +75,15 @@ public class CountDownService extends Service {
     }
 
     /**
-     * Vibrate 3 times (TODO: ALLOW MORE OPTIONS LIKE PULSE AND PULSE SPEED)
+     * Vibrate x number of times given the number of pulses and the speed
      */
     private Runnable vibrateAlert = new Runnable() {
         int count = 0;
         @Override
         public void run() {
             if (++count <= pulseNum) {
-                // Vibrate for 500 milliseconds
                 v.vibrate(pulseSpeed);
+                // 100ms needs to be added for proper distance btw pulses
                 mhandler.postDelayed(this, pulseSpeed+100);
             } else{
                 count = 0;
@@ -91,13 +91,16 @@ public class CountDownService extends Service {
         }
     };
 
+    /**
+     * Vibrate x number of times given the number of pulses and the speed
+     */
     private Runnable vibrateAlertSit = new Runnable() {
         int count = 0;
         @Override
         public void run() {
             if (++count <= pulseNumSit) {
-                // Vibrate for 500 milliseconds
                 v.vibrate(pulseSpeedSit);
+                // 100ms needs to be added for proper distance btw pulses
                 mhandler.postDelayed(this, pulseSpeedSit+100);
             } else {
                 count = 0;

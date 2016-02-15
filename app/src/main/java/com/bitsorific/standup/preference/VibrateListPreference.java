@@ -13,6 +13,9 @@ import android.util.AttributeSet;
 import com.bitsorific.standup.activity.SettingsActivity;
 
 /**
+ * Custom ListPreference class for adding an OK button to confirm
+ * user selection and perview selection while on the AlertDialog.
+ *
  * Created by nischal on 2/15/16.
  */
 public class VibrateListPreference extends ListPreference {
@@ -47,6 +50,7 @@ public class VibrateListPreference extends ListPreference {
             isRunning = true;
             if (++count <= numPulses) {
                 v.vibrate(speedPulse);
+                // 100ms needs to be added for proper distance btw pulses
                 mhandler.postDelayed(this, speedPulse+100);
             } else{
                 count = 0;
@@ -109,6 +113,7 @@ public class VibrateListPreference extends ListPreference {
      * @param which Index of the selection
      */
     private void previewVibe(int which){
+        // Get num of pulses again in case settings have changed while on the Preference activity
         getNumPulses();
         switch(which){
             case 0:
