@@ -32,20 +32,41 @@
 
     <!-- Strings related to Settings -->
 
+    <!-- Sound-->
     <string name="pref_sound_title">Sound</string>
     <string name="pref_summary_sound">Turn sound on/off</string>
     <string name="pref_title_sound">Alarm sound</string>
     <string name="pref_summary_alarm_tone">Pick an alarm sound</string>
-    <string name="pref_title_alarm_tone_stand">Alarm tone to stand up</string>
-    <string name="pref_title_alarm_tone_sit">Alarm tone to sit down</string>
+    <string name="pref_title_alarm_tone_stand">Stand up alarm</string>
     <string name="pref_timer_title">Timer</string>
+    <!-- Sitting down alarm -->
+    <string name="pref_title_alarm_tone_sit">Sit down alarm</string>
     <string name="pref_title_sitting_period">Sitting period</string>
     <string name="pref_summary_sitting_period">Period of time sitting down (Default: 20 Max: 60)</string>
     <string name="dialog_title_sitting_time_preference">Enter sitting period</string>
+    <!-- Standing up alarm -->
     <string name="pref_title_standing_period">Standing period</string>
     <string name="pref_summary_standing_period">Period of time standing up (Default: 5)</string>
     <string name="dialog_title_standing_time_preference">Enter standing period (min)</string>
+
+    <!-- About -->
     <string name="rate">Rate</string>
     <string name="rate_on_google_play">Rate on Google Play</string>
+
+    <!-- Vibrate -->
+    <string name="vibrate_label">Vibrate</string>
+    <string name="pref_pulse_number_dialog_title">Enter number of pulses</string>
+    <string name="pref_pulse_number_summary">Number of pulses for the reminder</string>
+    <!--Standing-->
+    <string name="pref_pulse_number_stand_title">Stand up pulses</string>
+    <!-- Sitting-->
+    <string name="pref_pulse_number_sit_title">Sit down pulses</string>
+
+    <!-- Speed -->
+    <string name="pref_pulse_speed_summary">Pick the speed of pulse</string>
+    <string name="pref_pulse_speed_dialog_title">Pick speed of pulse</string>
+    <string name="pref_pulse_speed_stand_title">Stand up pulse speed</string>
+    <string name="pref_pulse_speed_sit_title">Sit down pulse speed</string>
+
 
 </resources>

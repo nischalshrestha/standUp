@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Sound -->
     <PreferenceCategory
         android:title="@string/pref_sound_title"
         android:key="pref_sound_settings">
@@ -31,10 +32,47 @@
             android:showSilent="false"
             />
 
+    </PreferenceCategory>
 
+    <!-- Vibrate -->
+    <PreferenceCategory
+        android:title="@string/vibrate_label">
+
+        <com.bitsorific.standup.preference.NumberPickerPreference
+            android:key="pref_pulse_number_stand"
+            android:title="@string/pref_pulse_number_stand_title"
+            android:summary="@string/pref_pulse_number_summary"
+            android:dialogTitle="@string/pref_pulse_number_dialog_title"/>
+
+        <com.bitsorific.standup.preference.NumberPickerPreference
+            android:key="pref_pulse_number_sit"
+            android:title="@string/pref_pulse_number_sit_title"
+            android:summary="@string/pref_pulse_number_summary"
+            android:dialogTitle="@string/pref_pulse_number_dialog_title"/>
+
+        <ListPreference
+            android:key="pref_pulse_speed_stand"
+            android:title="@string/pref_pulse_speed_stand_title"
+            android:summary="@string/pref_pulse_speed_summary"
+            android:entries="@array/pref_pulse_speed"
+            android:entryValues="@array/pref_pulse_speed_values"
+            android:dialogTitle="@string/pref_pulse_speed_dialog_title"
+            android:defaultValue="800"
+            />
+
+        <ListPreference
+            android:key="pref_pulse_speed_sit"
+            android:title="@string/pref_pulse_speed_sit_title"
+            android:summary="@string/pref_pulse_speed_summary"
+            android:entries="@array/pref_pulse_speed"
+            android:entryValues="@array/pref_pulse_speed_values"
+            android:dialogTitle="@string/pref_pulse_speed_dialog_title"
+            android:defaultValue="800"
+            />
 
     </PreferenceCategory>
 
+    <!-- Timer -->
     <PreferenceCategory
         android:title="@string/pref_timer_title"
         android:key="pref_timer_settings">

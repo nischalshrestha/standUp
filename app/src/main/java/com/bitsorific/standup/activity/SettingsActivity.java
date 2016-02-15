@@ -11,17 +11,30 @@ import com.bitsorific.standup.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    // Sound key constants
+    /** Sound **/
     public static final String KEY_PREF_ALARM_TONE_STAND = "pref_key_alarm_tone_stand";
     public static final String KEY_PREF_ALARM_TONE_SIT = "pref_key_alarm_tone_sit";
     public static final String KEY_PREF_SOUND = "pref_key_sound";
+    // Default values
     public static final Boolean PREF_SOUND_DEFAULT = false;
 
-    // Timer key constants
+    /** Vibrate **/
+    // Amount
+    public static final String KEY_PREF_PULSE_NUM = "pref_pulse_number_stand";
+    public static final String KEY_PREF_PULSE_NUM_SIT = "pref_pulse_number_sit";
+    // Speed
+    public static final String KEY_PREF_PULSE_SPEED = "pref_pulse_speed_stand";
+    public static final String KEY_PREF_PULSE_SPEED_SIT = "pref_pulse_speed_sit";
+    // Default values
+    public static final int PULSE_NUM_DEFAULT_VALUE = 0;
+    public static final int PULSE_NUM_DEFAULT_VALUE_SIT = 0;
+    public static final String PULSE_SPEED_DEFAULT_VALUE = "800";
+
+    /** Timer **/
     public static final String KEY_PREF_SITTING_PERIOD = "sitting_period_preference";
     public static final String KEY_PREF_STANDING_PERIOD = "standing_period_preference";
-
-    // The way NumberPicker works forces us to pick 0 as the instead of simply any other min
+    // The way NumberPicker works forces us to pick 0 as the default instead of simply any other min
+    // since it refers to the position in the scrolling view; > 0 causes an error when scrolling
     public static final int SITTING_DEFAULT_VALUE = 0;
     public static final String STANDING_DEFAULT_VALUE = "5";
 

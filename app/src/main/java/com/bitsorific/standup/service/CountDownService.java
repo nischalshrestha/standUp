@@ -46,11 +46,17 @@ public class CountDownService extends Service {
     // Intent for broadcasting
     private Intent i = new Intent(BROADCAST_COUNTDOWN);
 
-    // Sound/vibrator
+    // Sound
     private Boolean sound = false;
     private MediaPlayer mpAlarmStand;
     private MediaPlayer mpAlarmSit;
+
+    // Vibrate
     private Vibrator v;
+    private int pulseSpeed; //Normal speed
+    private int pulseSpeedSit; //Normal speed
+    private int pulseNum;
+    private int pulseNumSit;
 
     /**
      * Timer to cancel media players after playing its length
@@ -75,9 +81,23 @@ public class CountDownService extends Service {
         int count = 0;
         @Override
         public void run() {
-            if (++count <= 3) {
+            if (++count <= pulseNum) {
                 // Vibrate for 500 milliseconds
-                v.vibrate(100);
+                v.vibrate(pulseSpeed);
+                mhandler.postDelayed(this, 100);
+            } else {
+                count = 0;
+            }
+        }
+    };
+
+    private Runnable vibrateAlertSit = new Runnable() {
+        int count = 0;
+        @Override
+        public void run() {
+            if (++count <= pulseNumSit) {
+                // Vibrate for 500 milliseconds
+                v.vibrate(pulseSpeedSit);
                 mhandler.postDelayed(this, 100);
             } else {
                 count = 0;
@@ -134,12 +154,27 @@ public class CountDownService extends Service {
         // Grab timer and sound settings
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                SettingsActivity.SITTING_DEFAULT_VALUE) * 1) + 1) * MainActivity.MINUTE;
+                SettingsActivity.SITTING_DEFAULT_VALUE) * 5) + 20) * MainActivity.MINUTE;
         int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
                 SettingsActivity.STANDING_DEFAULT_VALUE)) * MainActivity.MINUTE;
 
-//        Log.d("Resume", "sit: " + sittingPeriod);
-//        Log.d("Resume", "stand: " + standingPeriod);
+        pulseNum = (prefs.getInt(SettingsActivity.KEY_PREF_PULSE_NUM,
+                SettingsActivity.PULSE_NUM_DEFAULT_VALUE) * 1) + 1;
+        pulseNumSit = (prefs.getInt(SettingsActivity.KEY_PREF_PULSE_NUM_SIT,
+                SettingsActivity.PULSE_NUM_DEFAULT_VALUE_SIT) * 1) + 1;
+
+        pulseSpeed = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_PULSE_SPEED,
+                SettingsActivity.PULSE_SPEED_DEFAULT_VALUE));
+        pulseSpeedSit =  Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_PULSE_SPEED_SIT,
+                SettingsActivity.PULSE_SPEED_DEFAULT_VALUE));
+
+        Log.d("Pref", "vibrate num for stand: " + pulseNum);
+        Log.d("Pref", "vibrate num for sit: " + pulseNumSit);
+        Log.d("Pref", "vibrate speed for stand: " + pulseSpeed);
+        Log.d("Pref", "vibrate speed for sit: " + pulseSpeedSit);
+
+//        Log.d("Pref", "sit: " + sittingPeriod);
+//        Log.d("Pref", "stand: " + standingPeriod);
 
         // Check sound
         v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -153,6 +188,8 @@ public class CountDownService extends Service {
             mpAlarmStand = MediaPlayer.create(getApplicationContext(), Uri.parse(uriStand));
             mpAlarmSit =  MediaPlayer.create(getApplicationContext(), Uri.parse(uriSit));
         }
+
+
 
         // Sitting down timer
         sitTimer = new CountDownTimer(sittingPeriod, MainActivity.MILLIS) {
@@ -192,7 +229,7 @@ public class CountDownService extends Service {
             public void onFinish() {
 //                Log.i(TAG, "standTimer finished");
                 if(!sound) {
-                    mhandler.post(vibrateAlert);
+                    mhandler.post(vibrateAlertSit);
                 } else{
                     mhandler.post(soundAlertSit);
                 }

@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <integer-array name="pref_sitting_period">
-        <item>20</item>
-        <item>25</item>
-        <item>30</item>
-        <item>35</item>
-        <item>40</item>
-        <item>45</item>
-        <item>50</item>
-        <item>60</item>
-    </integer-array>
+    <string-array name="pref_pulse_speed">
+        <item>Slow</item>
+        <item>Normal</item>
+        <item>Fast</item>
+        <item>Very Fast</item>
+    </string-array>
+
+    <!--<string-array name="pref_vibrate_speed_default_array">-->
+
+    <!--</string-array>-->
+
+    <string-array name="pref_pulse_speed_values">
+        <item>1000</item>
+        <item>800</item>
+        <item>500</item>
+        <item>100</item>
+    </string-array>
 
 </resources>
