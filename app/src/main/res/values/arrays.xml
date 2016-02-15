@@ -13,10 +13,10 @@
     <!--</string-array>-->
 
     <string-array name="pref_pulse_speed_values">
-        <item>1000</item>
         <item>800</item>
         <item>500</item>
         <item>100</item>
+        <item>50</item>
     </string-array>
 
 </resources>

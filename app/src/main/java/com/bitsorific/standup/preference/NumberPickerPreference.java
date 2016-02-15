@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.NumberPicker;
 
@@ -15,7 +14,7 @@ import com.bitsorific.standup.activity.SettingsActivity;
 /**
  * Created by nischal on 2/10/16.
  */
-public class NumberPickerPreference extends DialogPreference implements DialogInterface.OnClickListener{
+public class NumberPickerPreference extends DialogPreference {
 
     private static final int MIN_SITTING_PERIOD = 0;
     private static final int MAX_SITTING_PERIOD = 8;
@@ -79,7 +78,7 @@ public class NumberPickerPreference extends DialogPreference implements DialogIn
             // To display 20-60 in multiples of 5
             for (int i = MIN_SITTING_PERIOD, j = 0; j < sittingValues.length; i++, j++) {
                 sittingValues[j] = Integer.toString(i * 5 + 20);
-                Log.d("Num", sittingValues[j]);
+//                Log.d("Num", sittingValues[j]);
             }
             np.setDisplayedValues(sittingValues);
         } else{
@@ -89,7 +88,7 @@ public class NumberPickerPreference extends DialogPreference implements DialogIn
             // To display 20-60 in multiples of 5
             for (int i = MIN_VIBRATE_NUM, j = 0; j < vibrateValues.length; i++, j++) {
                 vibrateValues[j] = Integer.toString(i * 1 + 1);
-                Log.d("Num", vibrateValues[j]);
+//                Log.d("Num", vibrateValues[j]);
             }
             np.setDisplayedValues(vibrateValues);
         }

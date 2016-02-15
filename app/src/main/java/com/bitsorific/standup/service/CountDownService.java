@@ -53,8 +53,8 @@ public class CountDownService extends Service {
 
     // Vibrate
     private Vibrator v;
-    private int pulseSpeed; //Normal speed
-    private int pulseSpeedSit; //Normal speed
+    private int pulseSpeed;
+    private int pulseSpeedSit;
     private int pulseNum;
     private int pulseNumSit;
 
@@ -84,8 +84,8 @@ public class CountDownService extends Service {
             if (++count <= pulseNum) {
                 // Vibrate for 500 milliseconds
                 v.vibrate(pulseSpeed);
-                mhandler.postDelayed(this, 100);
-            } else {
+                mhandler.postDelayed(this, pulseSpeed+100);
+            } else{
                 count = 0;
             }
         }
@@ -98,7 +98,7 @@ public class CountDownService extends Service {
             if (++count <= pulseNumSit) {
                 // Vibrate for 500 milliseconds
                 v.vibrate(pulseSpeedSit);
-                mhandler.postDelayed(this, 100);
+                mhandler.postDelayed(this, pulseSpeedSit+100);
             } else {
                 count = 0;
             }
@@ -168,11 +168,10 @@ public class CountDownService extends Service {
         pulseSpeedSit =  Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_PULSE_SPEED_SIT,
                 SettingsActivity.PULSE_SPEED_DEFAULT_VALUE));
 
-        Log.d("Pref", "vibrate num for stand: " + pulseNum);
-        Log.d("Pref", "vibrate num for sit: " + pulseNumSit);
-        Log.d("Pref", "vibrate speed for stand: " + pulseSpeed);
-        Log.d("Pref", "vibrate speed for sit: " + pulseSpeedSit);
-
+//        Log.d("Pref", "vibrate num for stand: " + pulseNum);
+//        Log.d("Pref", "vibrate num for sit: " + pulseNumSit);
+//        Log.d("Pref", "vibrate speed for stand: " + pulseSpeed);
+//        Log.d("Pref", "vibrate speed for sit: " + pulseSpeedSit);
 //        Log.d("Pref", "sit: " + sittingPeriod);
 //        Log.d("Pref", "stand: " + standingPeriod);
 

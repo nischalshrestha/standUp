@@ -48,9 +48,9 @@
             android:key="pref_pulse_number_sit"
             android:title="@string/pref_pulse_number_sit_title"
             android:summary="@string/pref_pulse_number_summary"
-            android:dialogTitle="@string/pref_pulse_number_dialog_title"/>
+            android:dialogTitle="@string/pref_pulse_number_sit_dialog_title"/>
 
-        <ListPreference
+        <com.bitsorific.standup.preference.VibrateListPreference
             android:key="pref_pulse_speed_stand"
             android:title="@string/pref_pulse_speed_stand_title"
             android:summary="@string/pref_pulse_speed_summary"
@@ -60,13 +60,13 @@
             android:defaultValue="800"
             />
 
-        <ListPreference
+        <com.bitsorific.standup.preference.VibrateListPreference
             android:key="pref_pulse_speed_sit"
             android:title="@string/pref_pulse_speed_sit_title"
             android:summary="@string/pref_pulse_speed_summary"
             android:entries="@array/pref_pulse_speed"
             android:entryValues="@array/pref_pulse_speed_values"
-            android:dialogTitle="@string/pref_pulse_speed_dialog_title"
+            android:dialogTitle="@string/pref_pulse_speed_sit_dialog_title"
             android:defaultValue="800"
             />
 

@@ -55,7 +55,8 @@
 
     <!-- Vibrate -->
     <string name="vibrate_label">Vibrate</string>
-    <string name="pref_pulse_number_dialog_title">Enter number of pulses</string>
+    <string name="pref_pulse_number_dialog_title">Number of pulses for standing</string>
+    <string name="pref_pulse_number_sit_dialog_title">Number of pulses for sitting</string>
     <string name="pref_pulse_number_summary">Number of pulses for the reminder</string>
     <!--Standing-->
     <string name="pref_pulse_number_stand_title">Stand up pulses</string>
@@ -64,7 +65,8 @@
 
     <!-- Speed -->
     <string name="pref_pulse_speed_summary">Pick the speed of pulse</string>
-    <string name="pref_pulse_speed_dialog_title">Pick speed of pulse</string>
+    <string name="pref_pulse_speed_dialog_title">Speed of pulse for standing</string>
+    <string name="pref_pulse_speed_sit_dialog_title">Speed of pulse for sitting</string>
     <string name="pref_pulse_speed_stand_title">Stand up pulse speed</string>
     <string name="pref_pulse_speed_sit_title">Sit down pulse speed</string>
 
