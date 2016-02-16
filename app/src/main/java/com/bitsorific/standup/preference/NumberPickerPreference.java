@@ -17,7 +17,7 @@ import com.bitsorific.standup.activity.SettingsActivity;
 public class NumberPickerPreference extends DialogPreference {
 
     private static final int MIN_SITTING_PERIOD = 0;
-    private static final int MAX_SITTING_PERIOD = 8;
+    private static final int MAX_SITTING_PERIOD = 9;
 
     private static final int MIN_VIBRATE_NUM = 0;
     private static final int MAX_VIBRATE_NUM = 4;
@@ -77,7 +77,7 @@ public class NumberPickerPreference extends DialogPreference {
             np.setValue(this.getPersistedInt(SettingsActivity.SITTING_DEFAULT_VALUE));
             // To display 20-60 in multiples of 5
             for (int i = MIN_SITTING_PERIOD, j = 0; j < sittingValues.length; i++, j++) {
-                sittingValues[j] = Integer.toString(i * 5 + 20);
+                sittingValues[j] = Integer.toString(i * 5 + 15);
 //                Log.d("Num", sittingValues[j]);
             }
             np.setDisplayedValues(sittingValues);
