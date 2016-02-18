@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activity.MainActivity"
     android:id="@+id/ol"
     >
@@ -19,7 +20,6 @@
         android:layout_centerHorizontal="true"
         />
 
-
     <RelativeLayout
         android:id="@+id/statusLayout"
         android:layout_width="150dp"
@@ -29,14 +29,14 @@
         android:foregroundGravity="center"
         android:layout_centerHorizontal="true">
 
-        <ImageView
-            android:id="@+id/status"
-            android:layout_width="@dimen/status_width"
-            android:layout_height="@dimen/status_height"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_seat_recline_normal"
-            android:layout_marginTop="@dimen/status_marginTop"
-            android:layout_marginBottom="@dimen/status_marginBottom"/>
+            <ImageView
+                android:id="@+id/status"
+                android:layout_width="@dimen/status_width"
+                android:layout_height="@dimen/status_height"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_seat_recline_normal"
+                android:layout_marginTop="@dimen/status_marginTop"
+                android:layout_marginBottom="@dimen/status_marginBottom"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -50,8 +50,6 @@
             android:progressDrawable="@drawable/progress_shape"
             android:indeterminate="false"/>
     </RelativeLayout>
-
-
 
     <LinearLayout
         android:id="@+id/timerLayout"
@@ -86,18 +84,40 @@
     </LinearLayout>
 
 
-    <Button
-        android:id="@+id/start"
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/more"
         android:layout_width="@dimen/start_width"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/start_marginTop"
         android:layout_marginBottom="@dimen/start_marginBot"
+        android:padding="0dp"
+        android:layout_centerHorizontal="true"
+        app:mrl_rippleOverlay="true"
+        app:mrl_rippleColor="#ffffff"
+        app:mrl_rippleAlpha="0.2"
+        app:mrl_rippleDimension="10dp"
+        app:mrl_rippleHover="true"
+        app:mrl_rippleRoundedCorners="10dp"
+        app:mrl_rippleInAdapter="false"
+        app:mrl_rippleDuration="250"
+        app:mrl_rippleFadeDuration="75"
+        app:mrl_rippleDelayClick="true"
+        app:mrl_rippleBackground="@android:color/transparent"
+        app:mrl_ripplePersistent="false"
+        >
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="@dimen/start_width"
+        android:layout_height="wrap_content"
         android:background="@drawable/rounded_button"
         android:text="@string/start_button"
         android:textSize="@dimen/start_text"
         android:textColor="@android:color/white"
-        android:layout_centerHorizontal="true"/>
+        />
+
+    </com.balysv.materialripple.MaterialRippleLayout>
 
 
 </RelativeLayout>

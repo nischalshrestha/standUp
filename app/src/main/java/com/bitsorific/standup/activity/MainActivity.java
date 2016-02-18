@@ -48,9 +48,13 @@ public class MainActivity extends AppCompatActivity {
     // Status
     private TextView statusTextView;
     private ImageView statusView;
+
     private Button startBtn;
     public static int standColor;
     public static int sitColor;
+    public static int startBtnColor;
+    public static int stopBtnColor;
+
     private int currentStatus = sitColor;
 
     // Animation
@@ -89,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         // Set up vars for TextView colors and images
         sitColor = getResources().getColor(R.color.cyan);
         standColor = getResources().getColor(R.color.orange);
+        startBtnColor = getResources().getColor(R.color.green);
+        stopBtnColor = getResources().getColor(R.color.red);
+
         sit = getResources().getDrawable(R.drawable.ic_seat_recline_normal);
         stand = getResources().getDrawable(R.drawable.ic_walk);
 
@@ -111,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     statusTextView.setText(R.string.time_to_sit);
                     timerUnitView.setText(R.string.timer_unit);
                     startBtn.setText(R.string.stop_button);
+                    ((GradientDrawable) startBtn.getBackground()).setColor(stopBtnColor);
                     startService(new Intent(getApplicationContext(), CountDownService.class));
                     Log.i(TAG, "Started service");
                 } else if (startBtn.getText().equals(getString(R.string.stop_button))) {
@@ -119,11 +127,14 @@ public class MainActivity extends AppCompatActivity {
                     stopService(new Intent(getApplicationContext(), CountDownService.class));
                     progress = 0;
                     progressBar.clearAnimation();
+
                     progressBar.setProgress(progress);
                     handler.removeCallbacksAndMessages(null);
+                    ((GradientDrawable) startBtn.getBackground()).setColor(startBtnColor);
                 }
             }
         });
+
 
     }
 
@@ -162,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
         timerUnitView.setTextColor(sitColor);
         // Button
         startBtn.setText(R.string.start_button);
+        ((GradientDrawable) startBtn.getBackground()).setColor(startBtnColor);
     }
 
     /**
@@ -351,6 +363,10 @@ public class MainActivity extends AppCompatActivity {
                             progressBar.setMax(timePeriodSit);
                         }
                     }
+                    if(startBtn.getText().equals(getResources().getString(R.string.start_button))){
+                        progressBar.setProgress(0);
+                    }
+
                 }
 
                 @Override

@@ -10,4 +10,8 @@
     <color name="cyan">#1fbcd2</color>
     <color name="orange">#fd6942</color>
 
+    <!-- Button -->
+    <color name="green">#1e9c5a</color>
+    <color name="red">#d9453d</color>
+
 </resources>
