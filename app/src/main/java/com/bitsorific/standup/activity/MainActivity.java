@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
                     stopService(new Intent(getApplicationContext(), CountDownService.class));
                     progress = 0;
                     progressBar.clearAnimation();
-
                     progressBar.setProgress(progress);
                     handler.removeCallbacksAndMessages(null);
                     ((GradientDrawable) startBtn.getBackground()).setColor(startBtnColor);
