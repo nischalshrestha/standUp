@@ -21,6 +21,13 @@
             android:inputType="number">
         </EditTextPreference>
 
+        <CheckBoxPreference
+            android:key="notification_preference"
+            android:title="@string/pref_notification_title"
+            android:summary="@string/pref_notification_summary"
+            android:defaultValue="true">
+        </CheckBoxPreference>
+
     </PreferenceCategory>
 
     <!-- Sound -->
@@ -28,7 +35,7 @@
         android:title="@string/pref_sound_title"
         android:key="pref_sound_settings">
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="pref_key_sound"
             android:summary="@string/pref_summary_sound"
             android:title="@string/pref_title_sound"

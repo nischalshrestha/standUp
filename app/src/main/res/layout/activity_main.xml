@@ -83,7 +83,6 @@
             />
     </LinearLayout>
 
-
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/more"
         android:layout_width="@dimen/start_width"

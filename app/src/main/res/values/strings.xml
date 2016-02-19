@@ -34,7 +34,7 @@
 
     <!-- Sound-->
     <string name="pref_sound_title">Sound</string>
-    <string name="pref_summary_sound">Turn sound on/off</string>
+    <string name="pref_summary_sound">Enable sound alarms</string>
     <string name="pref_title_sound">Alarm sound</string>
     <string name="pref_summary_alarm_tone">Pick an alarm sound</string>
     <string name="pref_title_alarm_tone_stand">Stand up alarm</string>
@@ -70,5 +70,12 @@
     <string name="pref_pulse_speed_stand_title">Stand up pulse speed</string>
     <string name="pref_pulse_speed_sit_title">Sit down pulse speed</string>
 
+    <!-- Notifications -->
+    <string name="notification_stand_reminder">Stand up reminder</string>
+    <string name="notification_sit_reminder">Sit down reminder</string>
+    <string name="notification_stand">Time to stand up!</string>
+    <string name="notification_sit">You can sit down now!</string>
+    <string name="pref_notification_title">Reminder notification</string>
+    <string name="pref_notification_summary">Enable notification of current status</string>
 
 </resources>

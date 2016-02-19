@@ -38,6 +38,10 @@ public class SettingsActivity extends AppCompatActivity {
     public static final int SITTING_DEFAULT_VALUE = 0;
     public static final String STANDING_DEFAULT_VALUE = "5";
 
+    /** Notifications **/
+    public static final String KEY_NOTIFICATIONS = "notification_preference";
+    public static final boolean PREF_NOTIFICATION_DEFAULT = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
