@@ -208,7 +208,6 @@ public class CountDownService extends Service {
         mBuilderStand.setContentIntent(resultPendingIntent);
         mBuilder.setContentIntent(resultPendingIntent);
 
-
         // Sets an ID for the notification
         final int mNotificationId = 001;
         // Gets an instance of the NotificationManager service

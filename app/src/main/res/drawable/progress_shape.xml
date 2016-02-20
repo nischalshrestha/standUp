@@ -6,7 +6,7 @@
            android:innerRadiusRatio="2.5"
            android:shape="ring"
            android:useLevel="true"
-           android:thickness="7.8sp">
+           android:thickness="10dp">
 
         <solid android:color="@color/cyan" />
 

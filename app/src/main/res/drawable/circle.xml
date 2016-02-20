@@ -2,9 +2,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
        android:shape="ring"
        android:innerRadiusRatio="2.5"
-       android:thickness="7.8sp"
+       android:thickness="10dp"
        android:useLevel="false">
 
-    <solid android:color="#CCC" />
+    <solid android:color="#decccccc" />
 
 </shape>

@@ -38,17 +38,17 @@
                 android:layout_marginTop="@dimen/status_marginTop"
                 android:layout_marginBottom="@dimen/status_marginBottom"/>
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerHorizontal="true"
-            android:max="60000"
-            android:progress="0"
-            android:background="@drawable/circle"
-            android:progressDrawable="@drawable/progress_shape"
-            android:indeterminate="false"/>
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerHorizontal="true"
+                android:max="60000"
+                android:progress="10000"
+                android:background="@drawable/circle"
+                android:progressDrawable="@drawable/progress_shape"
+                android:indeterminate="false"/>
     </RelativeLayout>
 
     <LinearLayout
