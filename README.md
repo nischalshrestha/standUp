@@ -2,6 +2,8 @@
 
 A simple app that reminds you to stand up!
 
+Check it out: https://play.google.com/store/apps/details?id=com.bitsorific.standup
+
 # Future
 
 - Add an activity recognition module to detect whether you're sitting or standing
