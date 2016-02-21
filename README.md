@@ -2,6 +2,11 @@
 
 A simple app that reminds you to stand up!
 
+# Future
+
+- Add an activity recognition module to detect whether you're sitting or standing
+- Add reward system for actually standing up and bonus for moving around
+
 License
 --------
 
