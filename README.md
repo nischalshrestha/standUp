@@ -6,6 +6,7 @@ Check it out: https://play.google.com/store/apps/details?id=com.bitsorific.stand
 
 # Future
 
+- Add tablet support
 - Add an activity recognition module to detect whether you're sitting or standing
 - Add reward system for actually standing up and bonus for moving around
 
