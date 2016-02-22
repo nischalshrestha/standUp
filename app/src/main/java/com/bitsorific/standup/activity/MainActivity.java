@@ -181,7 +181,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Grab timer and sound settings
         int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                SettingsActivity.SITTING_DEFAULT_VALUE) * 5) + 15) * MINUTE;
+                SettingsActivity.SITTING_DEFAULT_VALUE) * SettingsActivity.STANDING_MULTIPLE)
+                + SettingsActivity.STANDING_MIN) * MINUTE;
 
         int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
                 SettingsActivity.STANDING_DEFAULT_VALUE)) * MINUTE;
@@ -256,6 +257,8 @@ public class MainActivity extends AppCompatActivity {
             if(remainingMillis % MINUTE < 1000) {
                 updateProgress(currentStatus);
             } else if(justIn){
+                startBtn.setText(R.string.stop_button);
+                ((GradientDrawable) startBtn.getBackground()).setColor(stopBtnColor);
                 setViews(currentStatus);
                 updateProgress(currentStatus);
             }

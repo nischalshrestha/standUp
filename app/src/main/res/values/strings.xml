@@ -42,7 +42,7 @@
     <!-- Sitting down alarm -->
     <string name="pref_title_alarm_tone_sit">Sit down alarm</string>
     <string name="pref_title_sitting_period">Sitting period</string>
-    <string name="pref_summary_sitting_period">Period of time sitting down (Default: 20 Max: 60)</string>
+    <string name="pref_summary_sitting_period">Period of time sitting down (Default: 15 Max: 60)</string>
     <string name="dialog_title_sitting_time_preference">Enter sitting period</string>
     <!-- Standing up alarm -->
     <string name="pref_title_standing_period">Standing period</string>

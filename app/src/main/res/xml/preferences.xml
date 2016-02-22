@@ -49,6 +49,7 @@
             android:defaultValue=""
             android:showDefault="true"
             android:showSilent="false"
+            android:ringtoneType="all"
             />
 
         <RingtonePreference
@@ -59,6 +60,7 @@
             android:defaultValue=""
             android:showDefault="true"
             android:showSilent="false"
+            android:ringtoneType="all"
             />
 
     </PreferenceCategory>

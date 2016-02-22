@@ -134,7 +134,7 @@ public class CountDownService extends Service {
                 mpAlarmStand.start();
                 timer = new Timer("cancel", true);
                 CancelAlarm cancelAlarm = new CancelAlarm();
-                timer.schedule(cancelAlarm, ringLength - 800);
+                timer.schedule(cancelAlarm, ringLength);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -155,7 +155,7 @@ public class CountDownService extends Service {
                 mpAlarmSit.start();
                 timer = new Timer("cancel", true);
                 CancelAlarm cancelAlarm = new CancelAlarm();
-                timer.schedule(cancelAlarm, ringLength - 800);
+                timer.schedule(cancelAlarm, ringLength);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -171,7 +171,8 @@ public class CountDownService extends Service {
         // Grab timer and sound settings
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                SettingsActivity.SITTING_DEFAULT_VALUE) * 5) + 15) * MainActivity.MINUTE;
+                SettingsActivity.SITTING_DEFAULT_VALUE) * SettingsActivity.STANDING_MULTIPLE)
+                + SettingsActivity.STANDING_MIN) * MainActivity.MINUTE;
         int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
                 SettingsActivity.STANDING_DEFAULT_VALUE)) * MainActivity.MINUTE;
 
@@ -298,9 +299,9 @@ public class CountDownService extends Service {
         sound = prefs.getBoolean(SettingsActivity.KEY_PREF_SOUND, SettingsActivity.PREF_SOUND_DEFAULT);
         if(sound){
             String uriStand = prefs.getString(SettingsActivity.KEY_PREF_ALARM_TONE_STAND,
-                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString());
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString());
             String uriSit = prefs.getString(SettingsActivity.KEY_PREF_ALARM_TONE_SIT,
-                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString());
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString());
             // check if they're running first
             // then set new MediaPlayers with possibly different ringtones.
             mpAlarmStand = MediaPlayer.create(getApplicationContext(), Uri.parse(uriStand));

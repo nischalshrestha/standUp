@@ -38,6 +38,9 @@ public class SettingsActivity extends AppCompatActivity {
     public static final int SITTING_DEFAULT_VALUE = 0;
     public static final String STANDING_DEFAULT_VALUE = "5";
 
+    public static final int STANDING_MULTIPLE = 5;
+    public static final int STANDING_MIN = 15;
+
     /** Notifications **/
     public static final String KEY_NOTIFICATIONS = "notification_preference";
     public static final boolean PREF_NOTIFICATION_DEFAULT = true;

@@ -45,7 +45,7 @@
                 android:layout_height="150dp"
                 android:layout_centerHorizontal="true"
                 android:max="60000"
-                android:progress="10000"
+                android:progress="0"
                 android:background="@drawable/circle"
                 android:progressDrawable="@drawable/progress_shape"
                 android:indeterminate="false"/>

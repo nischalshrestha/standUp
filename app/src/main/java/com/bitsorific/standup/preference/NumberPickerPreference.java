@@ -77,7 +77,8 @@ public class NumberPickerPreference extends DialogPreference {
             np.setValue(this.getPersistedInt(SettingsActivity.SITTING_DEFAULT_VALUE));
             // To display 20-60 in multiples of 5
             for (int i = MIN_SITTING_PERIOD, j = 0; j < sittingValues.length; i++, j++) {
-                sittingValues[j] = Integer.toString(i * 5 + 15);
+                sittingValues[j] = Integer.toString(i * SettingsActivity.STANDING_MULTIPLE
+                        + SettingsActivity.STANDING_MIN);
 //                Log.d("Num", sittingValues[j]);
             }
             np.setDisplayedValues(sittingValues);
