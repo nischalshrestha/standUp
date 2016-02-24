@@ -88,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
         statusView = (ImageView) findViewById(R.id.status);
         statusTextView = (TextView) findViewById(R.id.statusText);
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
+//        statusTextView.setTypeface(typeFace);
         timerView.setTypeface(typeFace);
+        timerUnitView.setTypeface(typeFace);
 
         // Set up vars for TextView colors and images
         sitColor = getResources().getColor(R.color.cyan);

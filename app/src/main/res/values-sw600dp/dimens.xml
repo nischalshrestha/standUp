@@ -1,0 +1,33 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!-- Status Text-->
+    <dimen name="status_text_marginTop">25dp</dimen>
+    <dimen name="status_text">50sp</dimen>
+    <!-- Status View -->
+    <dimen name="status_view_text">30sp</dimen>
+    <!-- Status Image-->
+    <dimen name="status_width">60dp</dimen>
+    <dimen name="status_height">60dp</dimen>
+    <dimen name="status_marginTop">100dp</dimen>
+    <dimen name="status_marginBottom">50dp</dimen>
+
+    <!-- Button -->
+    <dimen name="start_width">300dp</dimen>
+    <dimen name="start_height">200dp</dimen>
+    <dimen name="start_marginBot">50dp</dimen>
+    <dimen name="start_marginTop">100dp</dimen>
+    <dimen name="start_text">30sp</dimen>
+
+    <!-- Timer-->
+    <dimen name="timer_text">80sp</dimen>
+    <dimen name="timer_text_unit">50sp</dimen>
+    <dimen name="timer_text_unit_marginTop">10dp</dimen>
+    <dimen name="number_picker_height">200dp</dimen>
+    <dimen name="number_picker_unit_marginBottom">90dp</dimen>
+    <dimen name="number_picker_unit_marginLeft">10dp</dimen>
+
+
+
+</resources>
