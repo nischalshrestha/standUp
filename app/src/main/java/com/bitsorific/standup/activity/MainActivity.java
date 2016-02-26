@@ -3,6 +3,7 @@ package com.bitsorific.standup.activity;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,12 +27,25 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bitsorific.standup.R;
 import com.bitsorific.standup.service.CountDownService;
+import com.bitsorific.standup.service.DetectedActivitiesIntentService;
+import com.bitsorific.standup.utils.Constants;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.DetectedActivity;
 
+import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        ResultCallback<Status> {
 
     // Constants
     public static final int MINUTE = 60000;
@@ -76,6 +90,17 @@ public class MainActivity extends AppCompatActivity {
 
     // Intent for broadcasting
     private IntentFilter filter = new IntentFilter(CountDownService.BROADCAST_COUNTDOWN);
+
+    /**
+     * A receiver for DetectedActivity objects broadcast by the
+     * {@code ActivityDetectionIntentService}.
+     */
+    protected ActivityDetectionBroadcastReceiver mBroadcastReceiver;
+
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,14 +161,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Get a receiver for broadcasts from ActivityDetectionIntentService.
+        mBroadcastReceiver = new ActivityDetectionBroadcastReceiver();
+
+        // Kick off the request to build GoogleApiClient.
+        buildGoogleApiClient();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // Register receiver for local broadcasts
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
-        bm.registerReceiver(br, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(br, filter);
+        // Register the broadcast receiver that informs this activity of the DetectedActivity
+        // object broadcast sent by the intent service.
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver,
+                new IntentFilter(Constants.BROADCAST_ACTION));
+
         checkPreferences();
         // If service is already running set appropriate values for views
         if(isMyServiceRunning(CountDownService.class)) {
@@ -381,6 +415,120 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /** Activity Recognition **/
+
+    /**
+     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
+     * ActivityRecognition API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(ActivityRecognition.API)
+                .build();
+    }
+
+    /**
+     * Runs when a GoogleApiClient object successfully connects.
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.i(TAG, "Connected to GoogleApiClient");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * Registers for activity recognition updates using
+     * {@link com.google.android.gms.location.ActivityRecognitionApi#requestActivityUpdates} which
+     * returns a {@link com.google.android.gms.common.api.PendingResult}. Since this activity
+     * implements the PendingResult interface, the activity itself receives the callback, and the
+     * code within {@code onResult} executes. Note: once {@code requestActivityUpdates()} completes
+     * successfully, the {@code DetectedActivitiesIntentService} starts receiving callbacks when
+     * activities are detected.
+     */
+    public void requestActivityUpdatesButtonHandler(View view) {
+        if (!mGoogleApiClient.isConnected()) {
+            Toast.makeText(this, getString(R.string.not_connected),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
+                mGoogleApiClient,
+                Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
+                getActivityDetectionPendingIntent()
+        ).setResultCallback(this);
+    }
+
+    /**
+     * Runs when the result of calling requestActivityUpdates() and removeActivityUpdates() becomes
+     * available. Either method can complete successfully or with an error.
+     *
+     * @param status The Status returned through a PendingIntent when requestActivityUpdates()
+     *               or removeActivityUpdates() are called.
+     */
+    public void onResult(Status status) {
+        if (status.isSuccess()) {
+//            // Toggle the status of activity updates requested, and save in shared preferences.
+//            boolean requestingUpdates = !getUpdatesRequestedState();
+//            setUpdatesRequestedState(requestingUpdates);
+//
+//            // Update the UI. Requesting activity updates enables the Remove Activity Updates
+//            // button, and removing activity updates enables the Add Activity Updates button.
+//            setButtonsEnabledState();
+
+            Toast.makeText(
+                    this,
+                    getString(true ? R.string.activity_updates_added :
+                            R.string.activity_updates_removed),
+                    Toast.LENGTH_SHORT
+            ).show();
+        } else {
+            Log.e(TAG, "Error adding or removing activity detection: " + status.getStatusMessage());
+        }
+    }
+
+    /**
+     * Gets a PendingIntent to be sent for each activity detection.
+     */
+    private PendingIntent getActivityDetectionPendingIntent() {
+        Intent intent = new Intent(this, DetectedActivitiesIntentService.class);
+
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // requestActivityUpdates() and removeActivityUpdates().
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
+     * Receiver for intents sent by DetectedActivitiesIntentService via a sendBroadcast().
+     * Receives a list of one or more DetectedActivity objects associated with the current state of
+     * the device.
+     */
+    public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
+        protected static final String TAG = "activity-detection-response-receiver";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ArrayList<DetectedActivity> updatedActivities =
+                    intent.getParcelableArrayListExtra(Constants.ACTIVITY_EXTRA);
+//            updateDetectedActivitiesList(updatedActivities);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -408,11 +556,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         // Unregister receiver when activity is in the background
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
-        bm.unregisterReceiver(br);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(br);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
         Log.i(TAG, "Unregistered broacast receiver");
     }
 
@@ -421,8 +575,9 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         try {
             // Unregister receiver when activity is not visible
-            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
-            bm.unregisterReceiver(br);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(br);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+            mGoogleApiClient.disconnect();
         } catch (Exception e) {
             // Receiver was probably already stopped in onPause()
         }
