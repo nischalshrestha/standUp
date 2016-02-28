@@ -47,6 +47,7 @@ public class DetectedActivitiesIntentService extends IntentService {
 
     @Override
     public void onCreate() {
+        Log.i(TAG, "creating intent service");
         super.onCreate();
     }
 
@@ -65,17 +66,25 @@ public class DetectedActivitiesIntentService extends IntentService {
         // 0 and 100.
         ArrayList<DetectedActivity> detectedActivities = (ArrayList) result.getProbableActivities();
 
+        Boolean sitting = false;
+
         // Log each activity.
-        Log.i(TAG, "activities detected");
         for (DetectedActivity da: detectedActivities) {
             Log.i(TAG, Constants.getActivityString(
                             getApplicationContext(),
                             da.getType()) + " " + da.getConfidence() + "%"
             );
+            // If user is supposed to be standing, and if the sit activity has confidence > 50,
+            // send a broadcast to CountDownTimer so the user can be alerted
+            if(da.getType() == DetectedActivity.STILL && da.getConfidence() > 50){
+                Log.i(TAG, "still and confidence > 50");
+                sitting = true;
+                break;
+            }
         }
 
         // Broadcast the list of detected activities.
-        localIntent.putExtra(Constants.ACTIVITY_EXTRA, detectedActivities);
+        localIntent.putExtra(Constants.ACTIVITY_EXTRA, sitting);
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
     }
 }

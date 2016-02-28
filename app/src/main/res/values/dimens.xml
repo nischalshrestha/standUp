@@ -21,8 +21,8 @@
 
     <!-- Timer-->
     <dimen name="timer_text">50sp</dimen>
-    <dimen name="timer_text_unit">20sp</dimen>
-    <dimen name="timer_text_unit_marginTop">10dp</dimen>
+    <dimen name="timer_text_unit">30sp</dimen>
+    <dimen name="timer_text_unit_marginTop">5dp</dimen>
     <dimen name="number_picker_height">200dp</dimen>
     <dimen name="number_picker_unit_marginBottom">90dp</dimen>
     <dimen name="number_picker_unit_marginLeft">10dp</dimen>

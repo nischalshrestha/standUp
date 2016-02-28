@@ -25,7 +25,8 @@
             android:key="notification_preference"
             android:title="@string/pref_notification_title"
             android:summary="@string/pref_notification_summary"
-            android:defaultValue="true">
+            android:defaultValue="true"
+            >
         </CheckBoxPreference>
 
     </PreferenceCategory>
@@ -39,7 +40,8 @@
             android:key="pref_key_sound"
             android:summary="@string/pref_summary_sound"
             android:title="@string/pref_title_sound"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            />
 
         <RingtonePreference
             android:key="pref_key_alarm_tone_stand"

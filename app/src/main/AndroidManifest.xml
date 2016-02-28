@@ -3,6 +3,7 @@
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
 
     <application
         android:allowBackup="true"
@@ -44,6 +45,12 @@
         </activity>
 
         <service android:name=".service.CountDownService"></service>
+        <!-- Service that provides activity recognition data. Setting the android:exported attribute
+        to "false" stops other apps from starting this service, even when using an explicit
+        intent. -->
+        <service
+            android:name=".service.DetectedActivitiesIntentService"
+            android:exported="false" />
 
     </application>
 
