@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         statusView = (ImageView) findViewById(R.id.status);
         statusTextView = (TextView) findViewById(R.id.statusText);
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
-//        statusTextView.setTypeface(typeFace);
+        statusTextView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf"));
         timerView.setTypeface(typeFace);
         timerUnitView.setTypeface(typeFace);
 
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         currentStatus = sitColor;
         statusView.setImageDrawable(sit);
         // Indicate what the timer number means
-        statusTextView.setText("Timer set for " + timePeriodSit / MINUTE + " min");
+        statusTextView.setText("TIMER SET FOR " + timePeriodSit / MINUTE + " min");
         statusTextView.setTextColor(sitColor);
         // Timer unit (min remaining)
         timerUnitView.setText(R.string.number_picker_unit);
