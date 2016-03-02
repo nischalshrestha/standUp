@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         statusView = (ImageView) findViewById(R.id.status);
         statusTextView = (TextView) findViewById(R.id.statusText);
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Thin.ttf");
-        statusTextView.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf"));
         timerView.setTypeface(typeFace);
         timerUnitView.setTypeface(typeFace);
 
@@ -162,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         currentStatus = sitColor;
         statusView.setImageDrawable(sit);
         // Indicate what the timer number means
-        statusTextView.setText("TIMER SET FOR " + timePeriodSit / MINUTE + " min");
+        statusTextView.setText("Timer set for " + timePeriodSit / MINUTE + " min");
         statusTextView.setTextColor(sitColor);
         // Timer unit (min remaining)
         timerUnitView.setText(R.string.number_picker_unit);
@@ -236,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                 if(remainingMillis / MILLIS == 1){
                     transition = true;
                     setViews(standColor);
-                    Log.i(TAG, "Finishing countdown for " + timer);
+//                    Log.i(TAG, "Finishing countdown for " + timer);
                     progress = timePeriodSit;
                     updateUI.run();
                 }
@@ -247,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                     setViews(sitColor);
                     progress = timePeriodStand;
                     updateUI.run();
-                    Log.i(TAG, "Finishing countdown for " + timer);
+//                    Log.i(TAG, "Finishing countdown for " + timer);
                 }
             }
 
@@ -348,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
             animation.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {}
-
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     if (transition) {
@@ -367,12 +365,9 @@ public class MainActivity extends AppCompatActivity {
                     if(startBtn.getText().equals(getResources().getString(R.string.start_button))){
                         progressBar.setProgress(0);
                     }
-
                 }
-
                 @Override
                 public void onAnimationCancel(Animator animation) {}
-
                 @Override
                 public void onAnimationRepeat(Animator animation) {}
             });

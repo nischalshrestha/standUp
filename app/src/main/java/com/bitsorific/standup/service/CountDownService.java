@@ -46,7 +46,6 @@ public class CountDownService extends Service {
     private CountDownTimer sitTimer;
     private CountDownTimer standTimer;
     private Handler mhandler = new Handler();
-    private int currentTimer;
 
     // Intent for broadcasting
     private Intent i = new Intent(BROADCAST_COUNTDOWN);
