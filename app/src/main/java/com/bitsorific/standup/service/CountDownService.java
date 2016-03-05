@@ -6,12 +6,14 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -49,6 +51,8 @@ public class CountDownService extends Service {
 
     // Intent for broadcasting
     private Intent i = new Intent(BROADCAST_COUNTDOWN);
+    // To temporarily wake device for reminder in case device sleeps
+    private PowerManager.WakeLock screenOn;
 
     // Used to access settings
     private SharedPreferences prefs;
@@ -56,7 +60,6 @@ public class CountDownService extends Service {
     // Sound
     private Boolean sound = false;
     private Boolean notifications = false;
-
     private MediaPlayer mpAlarmStand;
     private MediaPlayer mpAlarmSit;
 
@@ -86,6 +89,7 @@ public class CountDownService extends Service {
             if (mpAlarmSit != null && mpAlarmSit.isPlaying()) {
                 mpAlarmSit.stop();
             }
+            screenOn.release();
         }
     }
 
@@ -103,6 +107,7 @@ public class CountDownService extends Service {
                 mhandler.postDelayed(this, pulseSpeed + 100);
             } else {
                 count = 0;
+                screenOn.release();
             }
         }
     };
@@ -121,6 +126,7 @@ public class CountDownService extends Service {
                 mhandler.postDelayed(this, pulseSpeedSit + 100);
             } else {
                 count = 0;
+                screenOn.release();
             }
         }
     };
@@ -184,8 +190,16 @@ public class CountDownService extends Service {
 //        Log.d("Pref", "sit: " + sittingPeriod);
 //        Log.d("Pref", "stand: " + standingPeriod);
 
+        screenOn = ((PowerManager) getSystemService(POWER_SERVICE))
+                .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Reminder");
+
         // Check sound
         v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+        // Ensure sound volume matches with the device's notification volume
+        AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION,
+                audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION),
+                0);
         checkPreferences();
 
         // Set up notifications
@@ -230,8 +244,9 @@ public class CountDownService extends Service {
             @Override
             public void onFinish() {
 //                Log.i(TAG, "sitTimer finished");
-                // Check for any changed setttings before playing sound/vibrate and showing
-                // notification
+                // Wake up device briefly, check for any changed setttings before playing
+                // sound/vibrate and showing notification
+                screenOn.acquire();
                 checkPreferences();
                 if (!sound) {
                     mhandler.post(vibrateAlert);
@@ -260,9 +275,10 @@ public class CountDownService extends Service {
             // Set Views to sitting
             @Override
             public void onFinish() {
-//                Log.i(TAG, "standTimer finished");
-                // Check for any changed setttings before playing sound/vibrate and showing
-                // notification
+//              Log.i(TAG, "standTimer finished");
+                // Wake up device briefly, check for any changed setttings before playing
+                // sound/vibrate and showing notification
+                screenOn.acquire();
                 checkPreferences();
                 if (!sound) {
                     mhandler.post(vibrateAlertSit);
@@ -305,8 +321,6 @@ public class CountDownService extends Service {
                     RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString());
             String uriSit = prefs.getString(SettingsActivity.KEY_PREF_ALARM_TONE_SIT,
                     RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString());
-            // check if they're running first
-            // then set new MediaPlayers with possibly different ringtones.
             mpAlarmStand = MediaPlayer.create(getApplicationContext(), Uri.parse(uriStand));
             mpAlarmSit = MediaPlayer.create(getApplicationContext(), Uri.parse(uriSit));
         }

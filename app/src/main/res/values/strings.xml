@@ -13,14 +13,14 @@
 
     <!-- About strings -->
     <string name="about">About</string>
-    <string name="about_text">Research has shown that sitting down for prolonged periods of time
-        compromises metabolic health.\n\nStand Up helps you stay healthy by reminding you to stand
-        up periodically when you plan on sitting down for prolonged periods of time. Start a session
-        before sitting down and customize the timer settings for standing and sitting. The app can run
-        in the background as you do other things and will keep reminding you until stopped.\n\nI hope
-        this app is useful to you! You\'re more than welcome to forward your questions/comments/feedback
-        to:\n</string>
-    <string name="email_address">nsrocker92@gmail.com\n</string>
+    <string name="about_text">Stand Up helps you stay healthy by reminding you to stand
+        up periodically when you plan on sitting down for prolonged periods of time. Customize the
+        timer and reminder settings for standing and sitting and start a session! \n\nThe app can run
+        in the background so simply hit Home and continue doing other things and Stand Up will keep
+        reminding you until stopped.\n\nI hope you find this app useful! You\'re more than welcome
+        to forward your questions/comments/feedback to my email and I will try to respond within 2
+        business days:\n</string>
+    <string name="email_address">bitsorific@gmail.com\n</string>
     <string name="source_label">Highly cited article:</string>
     <string name="source">Owen, N., Healy, G. N., Matthews, C. E., &amp; Dunstan, D. W. (2010). Too Much Sitting: The Population-Health Science of Sedentary Behavior. Exercise and Sport Sciences Reviews, 38(3), 105–113. http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3404815/</string>
     <string name="eula">End User License Agreement</string>
