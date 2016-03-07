@@ -18,7 +18,8 @@
             android:title="@string/pref_title_standing_period"
             android:summary="@string/pref_summary_standing_period"
             android:dialogTitle="@string/dialog_title_standing_time_preference"
-            android:inputType="number">
+            android:inputType="number"
+            android:defaultValue="5">
         </EditTextPreference>
 
         <CheckBoxPreference

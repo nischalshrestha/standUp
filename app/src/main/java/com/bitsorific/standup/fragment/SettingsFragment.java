@@ -37,8 +37,11 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // Handle input
-        if (key.equals(SettingsActivity.KEY_PREF_SITTING_PERIOD)) {
-//            Log.d("Pref", "val: "+sharedPreferences.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD, 20));
+        if(key.equals(SettingsActivity.KEY_PREF_STANDING_PERIOD)){
+            String val = sharedPreferences.getString(key, SettingsActivity.STANDING_DEFAULT_VALUE);
+            if(val.equals("")) {
+                sharedPreferences.edit().putString(key, SettingsActivity.STANDING_DEFAULT_VALUE).commit();
+            }
         }
     }
 }
