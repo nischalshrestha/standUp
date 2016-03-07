@@ -39,9 +39,9 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String STANDING_DEFAULT_VALUE = "5";
 
     // Multiply index selection of numberpicker for sitting period so you get multiples of 5 min
-    public static final int STANDING_MULTIPLE = 5;
+    public static final int SITTING_MULTIPLE = 5;
     // Minimum period for sitting
-    public static final int STANDING_MIN = 15;
+    public static final int SITTING_MIN = 15;
 
     /** Notifications **/
     public static final String KEY_NOTIFICATIONS = "notification_preference";

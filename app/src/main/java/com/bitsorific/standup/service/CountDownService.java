@@ -182,8 +182,8 @@ public class CountDownService extends Service {
         // Grab timer and sound settings
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                SettingsActivity.SITTING_DEFAULT_VALUE) * SettingsActivity.STANDING_MULTIPLE)
-                + SettingsActivity.STANDING_MIN) * MainActivity.MINUTE;
+                SettingsActivity.SITTING_DEFAULT_VALUE) * SettingsActivity.SITTING_MULTIPLE)
+                + SettingsActivity.SITTING_MIN) * MainActivity.MINUTE;
         int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
                 SettingsActivity.STANDING_DEFAULT_VALUE)) * MainActivity.MINUTE;
 

@@ -180,8 +180,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Grab timer and sound settings
         int sittingPeriod = ((prefs.getInt(SettingsActivity.KEY_PREF_SITTING_PERIOD,
-                SettingsActivity.SITTING_DEFAULT_VALUE) * SettingsActivity.STANDING_MULTIPLE)
-                + SettingsActivity.STANDING_MIN) * MINUTE;
+                SettingsActivity.SITTING_DEFAULT_VALUE) * SettingsActivity.SITTING_MULTIPLE)
+                + SettingsActivity.SITTING_MIN) * MINUTE;
 
         int standingPeriod = Integer.parseInt(prefs.getString(SettingsActivity.KEY_PREF_STANDING_PERIOD,
                 SettingsActivity.STANDING_DEFAULT_VALUE)) * MINUTE;
