@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this, CountDownService.class));
-        Log.i(TAG, "Stopped service");
+//        stopService(new Intent(this, CountDownService.class));
+//        Log.i(TAG, "Stopped service");
     }
 }
