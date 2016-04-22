@@ -10,6 +10,21 @@
     <string name="start_button">START SESSION</string>
     <string name="stop_button">STOP SESSION</string>
     <string name="session_started">Session started!</string>
+    <!-- In case user picks a custom alarm that isn't the right format -->
+    <string name="warning">The alarm cannot be found or isn\'t the accepted format by Android!
+        \n\nPlease convert the custom alarm to an acceptable format or pick one of the default Android alarms.
+        \n\nAndroid accepts the following audio formats (other formats vary by device):\n
+        \nAAC LC/LTP
+        \nHE-ACCv1
+        \nHE-ACCv2
+        \nAMR-NB
+        \nAMR-WB
+        \nFLAC
+        \nMP3
+        \nMIDI
+        \nVorbis
+        \nPCM/WAVE
+    </string>
 
     <!-- About strings -->
     <string name="about">About</string>

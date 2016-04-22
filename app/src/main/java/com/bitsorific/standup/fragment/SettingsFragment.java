@@ -31,6 +31,8 @@ public class SettingsFragment extends PreferenceFragment
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
 
+        final String WARNING = getResources().getString(R.string.warning);
+
         // Since RingtonePreference opens a new Activity, this is another way to listen to the
         // changes so we can handle the case of the tone not being the right format, and warn
         // the user!
@@ -41,7 +43,7 @@ public class SettingsFragment extends PreferenceFragment
                 MediaPlayer mpAlarm = MediaPlayer.create(getActivity(), Uri.parse(newValue.toString()));
                 if (mpAlarm == null) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage("The alarm cannot be found or isn't the accepted format by Android!")
+                    builder.setMessage(WARNING)
                             .setNegativeButton("Got it!", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // dismiss the dialog and return to activity
