@@ -41,7 +41,7 @@ public class SettingsFragment extends PreferenceFragment
                 MediaPlayer mpAlarm = MediaPlayer.create(getActivity(), Uri.parse(newValue.toString()));
                 if (mpAlarm == null) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage("The alarm cannot be found or isn't the format accepted by Android!")
+                    builder.setMessage("The alarm cannot be found or isn't the accepted format by Android!")
                             .setNegativeButton("Got it!", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // dismiss the dialog and return to activity
@@ -50,6 +50,8 @@ public class SettingsFragment extends PreferenceFragment
                             });
                     // Create the AlertDialog object and return it
                     builder.create().show();
+                } else{
+                    mpAlarm.release();
                 }
                 return true;
             }
