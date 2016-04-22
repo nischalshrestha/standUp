@@ -1,8 +1,13 @@
 package com.bitsorific.standup.fragment;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.AlertDialog;
 
 import com.bitsorific.standup.R;
 import com.bitsorific.standup.activity.SettingsActivity;
@@ -11,7 +16,7 @@ import com.bitsorific.standup.activity.SettingsActivity;
  * Created by nischal on 2/9/16.
  */
 public class SettingsFragment extends PreferenceFragment
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,6 +30,38 @@ public class SettingsFragment extends PreferenceFragment
         super.onResume();
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
+
+        // Since RingtonePreference opens a new Activity, this is another way to listen to the
+        // changes so we can handle the case of the tone not being the right format, and warn
+        // the user!
+        Preference.OnPreferenceChangeListener soundChangeListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                // Try to create a MediaPlayer, and if it's null it failed so warn user with dialog
+                MediaPlayer mpAlarm = MediaPlayer.create(getActivity(), Uri.parse(newValue.toString()));
+                if (mpAlarm == null) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("The alarm cannot be found or isn't the format accepted by Android!")
+                            .setNegativeButton("Got it!", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // dismiss the dialog and return to activity
+                                    dialog.dismiss();
+                                }
+                            });
+                    // Create the AlertDialog object and return it
+                    builder.create().show();
+                }
+                return true;
+            }
+        };
+
+        // Set the Stand up alarm's listener
+        Preference standSoundPref = findPreference(SettingsActivity.KEY_PREF_ALARM_TONE_STAND);
+        standSoundPref.setOnPreferenceChangeListener(soundChangeListener);
+
+        // Set the Sit down alarm's listener
+        Preference sitSoundPref = findPreference(SettingsActivity.KEY_PREF_ALARM_TONE_SIT);
+        sitSoundPref.setOnPreferenceChangeListener(soundChangeListener);
     }
 
     @Override
