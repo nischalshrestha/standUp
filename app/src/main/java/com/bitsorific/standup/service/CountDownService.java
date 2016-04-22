@@ -89,7 +89,6 @@ public class CountDownService extends Service {
             if (mpAlarmSit != null && mpAlarmSit.isPlaying()) {
                 mpAlarmSit.stop();
             }
-            screenOn.release();
         }
     }
 
@@ -107,7 +106,6 @@ public class CountDownService extends Service {
                 mhandler.postDelayed(this, pulseSpeed + 100);
             } else {
                 count = 0;
-                screenOn.release();
             }
         }
     };
@@ -126,7 +124,6 @@ public class CountDownService extends Service {
                 mhandler.postDelayed(this, pulseSpeedSit + 100);
             } else {
                 count = 0;
-                screenOn.release();
             }
         }
     };
@@ -192,6 +189,7 @@ public class CountDownService extends Service {
 
         screenOn = ((PowerManager) getSystemService(POWER_SERVICE))
                 .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Reminder");
+        screenOn.acquire();
 
         // Check sound
         v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -246,7 +244,6 @@ public class CountDownService extends Service {
 //                Log.i(TAG, "sitTimer finished");
                 // Wake up device briefly, check for any changed setttings before playing
                 // sound/vibrate and showing notification
-                screenOn.acquire();
                 checkPreferences();
                 if (!sound) {
                     mhandler.post(vibrateAlert);
@@ -278,7 +275,6 @@ public class CountDownService extends Service {
 //              Log.i(TAG, "standTimer finished");
                 // Wake up device briefly, check for any changed setttings before playing
                 // sound/vibrate and showing notification
-                screenOn.acquire();
                 checkPreferences();
                 if (!sound) {
                     mhandler.post(vibrateAlertSit);
@@ -368,6 +364,7 @@ public class CountDownService extends Service {
         mhandler.removeCallbacksAndMessages(null);
         // Gets an instance of the NotificationManager service
         mNotifyMgr.cancelAll();
+        screenOn.release();
         super.onDestroy();
     }
 

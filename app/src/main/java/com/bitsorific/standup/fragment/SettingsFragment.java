@@ -18,6 +18,10 @@ import com.bitsorific.standup.activity.SettingsActivity;
 public class SettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener{
 
+    private Preference.OnPreferenceChangeListener soundChangeListener;
+    private Preference standSoundPref;
+    private Preference sitSoundPref;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +40,7 @@ public class SettingsFragment extends PreferenceFragment
         // Since RingtonePreference opens a new Activity, this is another way to listen to the
         // changes so we can handle the case of the tone not being the right format, and warn
         // the user!
-        Preference.OnPreferenceChangeListener soundChangeListener = new Preference.OnPreferenceChangeListener() {
+        soundChangeListener = new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 // Try to create a MediaPlayer, and if it's null it failed so warn user with dialog
@@ -60,11 +64,11 @@ public class SettingsFragment extends PreferenceFragment
         };
 
         // Set the Stand up alarm's listener
-        Preference standSoundPref = findPreference(SettingsActivity.KEY_PREF_ALARM_TONE_STAND);
+        standSoundPref = findPreference(SettingsActivity.KEY_PREF_ALARM_TONE_STAND);
         standSoundPref.setOnPreferenceChangeListener(soundChangeListener);
 
         // Set the Sit down alarm's listener
-        Preference sitSoundPref = findPreference(SettingsActivity.KEY_PREF_ALARM_TONE_SIT);
+        sitSoundPref = findPreference(SettingsActivity.KEY_PREF_ALARM_TONE_SIT);
         sitSoundPref.setOnPreferenceChangeListener(soundChangeListener);
     }
 
@@ -84,5 +88,14 @@ public class SettingsFragment extends PreferenceFragment
                 sharedPreferences.edit().putString(key, SettingsActivity.STANDING_DEFAULT_VALUE).commit();
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Prevent leaks
+        standSoundPref.setOnPreferenceChangeListener(null);
+        sitSoundPref.setOnPreferenceChangeListener(null);
+        soundChangeListener = null;
     }
 }
