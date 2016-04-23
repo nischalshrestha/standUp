@@ -51,7 +51,7 @@
     <string name="pref_sound_title">Sound</string>
     <string name="pref_summary_sound">Enable sound alarms</string>
     <string name="pref_title_sound">Alarm sound</string>
-    <string name="pref_summary_alarm_tone">Pick an alarm sound</string>
+    <string name="pref_summary_alarm_tone">Pick an alarm sound (volume is based on Media volume)</string>
     <string name="pref_title_alarm_tone_stand">Stand up alarm</string>
     <string name="pref_timer_title">Timer</string>
     <!-- Sitting down alarm -->

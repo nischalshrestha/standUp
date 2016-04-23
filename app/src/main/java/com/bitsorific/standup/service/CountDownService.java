@@ -6,7 +6,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -83,10 +82,10 @@ public class CountDownService extends Service {
         @Override
         public void run() {
             // Do stuff
-            if (mpAlarmStand != null && mpAlarmStand.isPlaying()) {
+            if (mpAlarmStand != null) {
                 mpAlarmStand.stop();
             }
-            if (mpAlarmSit != null && mpAlarmSit.isPlaying()) {
+            if (mpAlarmSit != null) {
                 mpAlarmSit.stop();
             }
         }
@@ -193,11 +192,6 @@ public class CountDownService extends Service {
 
         // Check sound
         v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-        // Ensure sound volume matches with the device's notification volume
-        AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION,
-                audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION),
-                0);
         checkPreferences();
 
         // Set up notifications
@@ -312,6 +306,7 @@ public class CountDownService extends Service {
 
         // Sound
         sound = prefs.getBoolean(SettingsActivity.KEY_PREF_SOUND, SettingsActivity.PREF_SOUND_DEFAULT);
+
         if (sound) {
             String uriStand = prefs.getString(SettingsActivity.KEY_PREF_ALARM_TONE_STAND,
                     RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALL).toString());
