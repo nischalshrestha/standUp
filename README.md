@@ -6,7 +6,8 @@ Check it out: https://play.google.com/store/apps/details?id=com.bitsorific.stand
 
 # Future
 
-- Streamline the UI so that settings can be pulled up on the dashboard easily
+- Make application more robust by allowing it to recover from errors
+- Replace timers and UI update mechanism with RxJava
 
 License
 --------
